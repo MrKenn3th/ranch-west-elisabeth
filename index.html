@@ -302,6 +302,22 @@
   .reg-field input:focus, .reg-field textarea:focus{ border-color:var(--ink-red); }
   .reg-field textarea{ resize:vertical; }
   .reg-add-btn{ width:100%; margin-top:6px; font-family:'IM Fell English SC',Georgia,serif; text-transform:uppercase; letter-spacing:.5px; font-size:17px; color:var(--paper); background:var(--ink-red); border:none; padding:12px; cursor:pointer; transition:opacity .15s; }
+  .tcqta-stepper{ display:flex; align-items:stretch; gap:0; }
+  .tcqta-stepper input{ text-align:center; border-radius:0 !important; border-left:none !important; border-right:none !important; -moz-appearance:textfield; }
+  .tcqta-stepper input::-webkit-outer-spin-button, .tcqta-stepper input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  .tcqta-btn{ flex:0 0 46px; font-family:'IM Fell English SC',Georgia,serif; font-size:22px; line-height:1; color:var(--paper); background:var(--ink-red); border:1px solid var(--ink-soft); cursor:pointer; user-select:none; }
+  .tcqta-btn:active{ opacity:.8; }
+  .tco-hint2{ font-family:'Special Elite',monospace !important; text-transform:none !important; font-weight:400 !important; font-size:12px !important; color:var(--ink-soft) !important; letter-spacing:0 !important; }
+  .tco-list{ max-height:320px; overflow-y:auto; border:1px solid var(--ink-soft); background:var(--paper-deep); margin-bottom:14px; }
+  .tco-group-label{ font-family:'IM Fell English SC',Georgia,serif; text-transform:uppercase; letter-spacing:.5px; font-size:13px; color:var(--ink-red); padding:8px 11px 4px; border-bottom:1px dashed var(--ink-soft); }
+  .tco-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 11px; border-bottom:1px solid rgba(60,42,28,.12); }
+  .tco-row:last-child{ border-bottom:none; }
+  .tco-row.on{ background:rgba(140,24,24,.08); }
+  .tco-name{ font-family:'Special Elite',monospace; font-size:15px; color:var(--ink); flex:1; }
+  .tco-step{ display:flex; align-items:center; gap:0; flex:0 0 auto; }
+  .tco-sbtn{ width:34px; height:34px; font-family:'IM Fell English SC',Georgia,serif; font-size:19px; line-height:1; color:var(--paper); background:var(--ink-red); border:1px solid var(--ink-soft); cursor:pointer; user-select:none; }
+  .tco-sbtn:active{ opacity:.8; }
+  .tco-val{ min-width:38px; text-align:center; font-family:'Special Elite',monospace; font-size:16px; color:var(--ink); background:var(--paper); border-top:1px solid var(--ink-soft); border-bottom:1px solid var(--ink-soft); height:34px; line-height:34px; }
   .reg-add-btn:hover{ opacity:.88; }
 
   .reg-toolbar{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
@@ -615,8 +631,8 @@
         <h3 class="reg-panel-title">Consegna di caccia</h3>
         <p class="reg-panel-sub">Registra il bottino di un partecipante.</p>
         <label class="reg-field"><span>Partecipante</span><select id="tcPart"></select></label>
-        <label class="reg-field"><span>Oggetto</span><select id="tcOggetto"></select></label>
-        <label class="reg-field"><span>Quantità</span><input type="number" id="tcQta" min="1" step="1" value="1"></label>
+        <label class="reg-field"><span>Oggetti cacciati</span><span class="tco-hint2">Seleziona uno o più oggetti e indica le quantità.</span></label>
+        <div class="tco-list" id="tcOggettiList"></div>
         <button class="reg-add-btn" onclick="addDelivery()">➕ Aggiungi a caccia</button>
       </aside>
     </div>
@@ -1889,18 +1905,37 @@ function renderOrders(){
 
 initArticoliSelect();
 function initConsegnaCaccia(){
-  const sel = document.getElementById('tcOggetto');
-  if (!sel) return;
-  let html = '<option value="">— Scegli un oggetto —</option>';
+  const box = document.getElementById('tcOggettiList');
+  if (!box) return;
+  tcOggQ = {};
+  let html = '';
   const visti = new Set();
   data.forEach(cat => {
     if (cat.name !== 'Caccia') return; // solo i derivati della caccia (niente esche, trappole, attrezzi/coltelli)
-    const opts = cat.items
+    const righe = cat.items
       .filter(it => { const k = it.n.toLowerCase(); if (visti.has(k)) return false; visti.add(k); return true; })
-      .map(it => '<option value="' + esc(it.n) + '">' + esc(it.n) + '</option>').join('');
-    if (opts) html += '<optgroup label="' + esc(cat.name) + '">' + opts + '</optgroup>';
+      .map(it => {
+        const key = esc(it.n).replace(/"/g,'&quot;');
+        return '<div class="tco-row" id="tcorow-' + encodeURIComponent(it.n) + '">'
+          + '<span class="tco-name">' + esc(it.n) + '</span>'
+          + '<span class="tco-step">'
+          + '<button type="button" class="tco-sbtn" onclick="tcOggStep(' + JSON.stringify(it.n) + ',-1)">−</button>'
+          + '<span class="tco-val" id="tcoval-' + encodeURIComponent(it.n) + '">0</span>'
+          + '<button type="button" class="tco-sbtn" onclick="tcOggStep(' + JSON.stringify(it.n) + ',1)">+</button>'
+          + '</span></div>';
+      }).join('');
+    if (righe) html += '<div class="tco-group-label">' + esc(cat.name) + '</div>' + righe;
   });
-  sel.innerHTML = html;
+  box.innerHTML = html || '<p class="reg-empty" style="padding:10px;">Nessun oggetto di caccia disponibile.</p>';
+}
+let tcOggQ = {};
+function tcOggStep(nome, delta){
+  const v = Math.max(0, (tcOggQ[nome] || 0) + delta);
+  if (v === 0) delete tcOggQ[nome]; else tcOggQ[nome] = v;
+  const valEl = document.getElementById('tcoval-' + encodeURIComponent(nome));
+  if (valEl) valEl.textContent = v;
+  const rowEl = document.getElementById('tcorow-' + encodeURIComponent(nome));
+  if (rowEl) rowEl.classList.toggle('on', v > 0);
 }
 initConsegnaCaccia();
 renderOrders();
@@ -2003,19 +2038,28 @@ function removeParticipant(id){
   renderTorneo();
 }
 
+function tcQtaStep(delta){
+  const inp = document.getElementById('tcQta');
+  if (!inp) return;
+  let v = parseInt(inp.value) || 1;
+  v = Math.max(1, v + delta);
+  inp.value = v;
+}
 function addDelivery(){
   const partId = parseInt(document.getElementById('tcPart').value);
-  const oggetto = document.getElementById('tcOggetto').value.trim();
-  const qta = parseInt(document.getElementById('tcQta').value) || 1;
+  const oggetti = Object.keys(tcOggQ).filter(k => tcOggQ[k] > 0);
   if (!partId){ alert('Seleziona un partecipante iscritto.'); return; }
-  if (!oggetto){ alert('Inserisci l\u2019oggetto cacciato.'); return; }
+  if (oggetti.length === 0){ alert('Seleziona almeno un oggetto e indica la quantita.'); return; }
   const p = participants.find(x => x.id === partId);
-  const nuova = { id: Date.now(), partId, partNome: p ? p.nome : '', oggetto, qta };
-  deliveries.push(nuova);
+  const base = Date.now();
+  oggetti.forEach((oggetto, i) => {
+    const nuova = { id: base + i, partId, partNome: p ? p.nome : '', oggetto, qta: tcOggQ[oggetto] };
+    deliveries.push(nuova);
+    fbTorneoSet('deliveries', nuova.id, nuova);
+  });
   saveTorneo();
-  fbTorneoSet('deliveries', nuova.id, nuova);
-  document.getElementById('tcOggetto').value = '';
-  document.getElementById('tcQta').value = '1';
+  tcOggQ = {};
+  initConsegnaCaccia();
   renderTorneo();
 }
 
