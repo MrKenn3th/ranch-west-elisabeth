@@ -1905,6 +1905,7 @@ initConsegnaCaccia();
 renderOrders();
 initFirebase();
 initPrezziFirebase();
+initTorneoFirebase();
 
 /* ===== Torneo di caccia ===== */
 let participants = [];
@@ -1914,12 +1915,33 @@ try { participants = JSON.parse(localStorage.getItem('avamposto_torneo_part') ||
 try { deliveries = JSON.parse(localStorage.getItem('avamposto_torneo_cons') || '[]'); } catch(e){ deliveries = []; }
 try { storico = JSON.parse(localStorage.getItem('avamposto_torneo_storico') || '[]'); } catch(e){ storico = []; }
 
+let torneoRef = null;
 function saveTorneo(){
   try {
     localStorage.setItem('avamposto_torneo_part', JSON.stringify(participants));
     localStorage.setItem('avamposto_torneo_cons', JSON.stringify(deliveries));
     localStorage.setItem('avamposto_torneo_storico', JSON.stringify(storico));
   } catch(e){}
+  if (torneoRef){ try { torneoRef.set({ participants: participants, deliveries: deliveries, storico: storico, _ts: Date.now() }); } catch(e){} }
+}
+function initTorneoFirebase(){
+  if (!firebaseConfigurato() || typeof firebase === 'undefined') return;
+  try {
+    torneoRef = firebase.database().ref('avamposto_torneo');
+    torneoRef.on('value', snap => {
+      const val = snap.val();
+      if (!val) return;
+      participants = Array.isArray(val.participants) ? val.participants.filter(Boolean) : (val.participants ? Object.values(val.participants) : []);
+      deliveries = Array.isArray(val.deliveries) ? val.deliveries.filter(Boolean) : (val.deliveries ? Object.values(val.deliveries) : []);
+      storico = Array.isArray(val.storico) ? val.storico.filter(Boolean) : (val.storico ? Object.values(val.storico) : []);
+      try {
+        localStorage.setItem('avamposto_torneo_part', JSON.stringify(participants));
+        localStorage.setItem('avamposto_torneo_cons', JSON.stringify(deliveries));
+        localStorage.setItem('avamposto_torneo_storico', JSON.stringify(storico));
+      } catch(e){}
+      if (typeof renderTorneo === 'function') renderTorneo();
+    });
+  } catch(e){ console.warn('torneo firebase ko', e); }
 }
 
 const tpData = document.getElementById('tpData');
