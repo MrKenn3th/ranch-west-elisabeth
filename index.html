@@ -92,7 +92,7 @@
     background-attachment: fixed;
     color: var(--ink);
     font-family: Georgia, 'Times New Roman', serif;
-    padding: 20px 14px 120px;
+    padding: 20px 14px 24px;
     min-height: 100vh;
   }
 
@@ -106,7 +106,7 @@
   .header h1{ font-family: 'Rye','Impact',serif; font-size: 40px; line-height: 1.05; letter-spacing: 1.5px; margin: 0; color: #f3e8cd; font-weight: normal; text-shadow: 0 1px 0 #7a5a24, 0 2px 0 rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.7); }
   .header .tagline{ font-family: 'Special Elite', monospace; font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: #d8b968; margin-top: 8px; opacity: .92; }
 
-  .layout{ max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr 280px; gap: 14px; align-items: start; padding-bottom: 18px; }
+  .layout{ max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 14px; align-items: start; padding-bottom: 18px; }
 
   .categories-grid{ display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; align-items: start; perspective: 1400px; }
   .cell-caccia{ grid-row: 1; grid-column: 1; }
@@ -185,8 +185,17 @@
   .rules-list .pena{ color: var(--ink-red); font-weight: bold; }
   .rules-note{ margin: 0; padding: 8px 14px 12px; font-size: 12.5px; font-style: italic; color: var(--ink-soft); border-top: 1px dashed var(--rule); }
 
-  .summary-panel{ background: var(--paper-deep); border-radius: 8px; border-top: 2px solid rgba(255,255,255,.45); border-left: 2px solid rgba(255,255,255,.3); border-right: 2px solid rgba(0,0,0,.22); border-bottom: 3px solid rgba(0,0,0,.3); padding: 14px; position: sticky; top: 72px; max-height: calc(100vh - 220px); overflow-y: auto; box-shadow: 0 12px 26px rgba(0,0,0,.4), 0 3px 6px rgba(0,0,0,.3), inset 0 2px 2px rgba(255,255,255,.4), inset 0 -4px 10px rgba(0,0,0,.2); }
-  .summary-title{ font-family: 'IM Fell English SC','Rye',Georgia, serif; font-variant: normal; text-transform: uppercase; font-size: 17px; margin: 0 0 8px; color: var(--ink); font-weight: 700; border-bottom: 1px dashed var(--rule); padding-bottom: 6px; }
+  .summary-panel{ background: var(--paper-deep); border-radius: 10px; border-top: 2px solid rgba(255,255,255,.45); border-left: 2px solid rgba(255,255,255,.3); border-bottom: 3px solid rgba(0,0,0,.3); padding: 14px; width: 100%; margin-top: 40px; box-shadow: 0 8px 24px rgba(0,0,0,.32), inset 0 2px 2px rgba(255,255,255,.4), inset 0 -4px 10px rgba(0,0,0,.2); }
+  .summary-head{ display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom: 1px dashed var(--rule); margin-bottom: 8px; padding-bottom: 6px; }
+  .summary-close{ display:none !important; flex:0 0 auto; width: 26px; height: 26px; line-height: 1; border: 1px solid var(--ink-red); background: transparent; color: var(--ink-red); border-radius: 6px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: background .15s, color .15s; }
+  .summary-close:hover{ background: var(--ink-red); color: var(--paper); }
+  .listino-fab{ display: none !important; position: fixed; right: 16px; bottom: 150px; z-index: 155; width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--gold); background: var(--paper); color: var(--ink); font-size: 24px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px rgba(0,0,0,.4), inset 0 2px 3px rgba(255,255,255,.4); transition: transform .15s ease, box-shadow .15s ease; padding: 0; }
+  .listino-fab:hover{ transform: translateY(-3px) scale(1.05); box-shadow: 0 9px 22px rgba(0,0,0,.45); }
+  .listino-fab:active{ transform: scale(.96); }
+  .listino-fab-count{ position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--ink-red); color: #fff; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; display: none; align-items: center; justify-content: center; line-height: 1; box-shadow: 0 2px 6px rgba(0,0,0,.4); }
+  .listino-fab-count.show{ display: flex; }
+  @media (max-width:640px){ .listino-fab{ width:50px; height:50px; font-size:22px; right:12px; bottom:142px; } }
+  .summary-title{ font-family: 'IM Fell English SC','Rye',Georgia, serif; font-variant: normal; text-transform: uppercase; font-size: 17px; margin: 0; color: var(--ink); font-weight: 700; }
   .summary-empty{ font-size: 12px; color: var(--ink-soft); margin: 0; }
   .summary-row{ display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px dashed var(--rule); }
   .summary-row:last-child{ border-bottom: none; }
@@ -225,7 +234,6 @@
 
   @media (max-width: 900px){
     .layout{ grid-template-columns: 1fr; }
-    .summary-panel{ position: static; max-height: none; }
   }
   @media (max-width: 640px){
     .categories-grid{ grid-template-columns: 1fr; }
@@ -513,11 +521,11 @@
   body.staff-mode .prezzo-staff::after{ content:'\270E'; margin-left:5px; font-size:11px; color:var(--gold); }
   .nome-mancante{ outline:2px solid var(--ink-red) !important; box-shadow:0 0 0 3px rgba(138,47,34,.25) !important; }
   /* Pulsante flottante Staff (a destra, accessibile ovunque) */
-  .staff-fab{ position:fixed; right:16px; bottom:92px; z-index:300; width:56px; height:56px; border-radius:50%; border:2px solid var(--gold); background:var(--paper); color:var(--ink); font-size:26px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,.4), inset 0 2px 3px rgba(255,255,255,.4); transition:transform .15s ease, box-shadow .15s ease; padding:0; }
+  .staff-fab{ position:fixed; right:16px; bottom:210px; z-index:300; width:56px; height:56px; border-radius:50%; border:2px solid var(--gold); background:var(--paper); color:var(--ink); font-size:26px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,.4), inset 0 2px 3px rgba(255,255,255,.4); transition:transform .15s ease, box-shadow .15s ease; padding:0; }
   .staff-fab:hover{ transform:translateY(-3px) scale(1.05); box-shadow:0 9px 22px rgba(0,0,0,.45); }
   .staff-fab:active{ transform:scale(.96); }
   body.staff-mode .staff-fab{ border-color:#2f8f3e; background:rgba(47,143,62,.14); box-shadow:0 6px 18px rgba(47,143,62,.4), inset 0 2px 3px rgba(255,255,255,.4); }
-  @media (max-width:640px){ .staff-fab{ width:50px; height:50px; font-size:23px; right:12px; bottom:84px; } }
+  @media (max-width:640px){ .staff-fab{ width:50px; height:50px; font-size:23px; right:12px; bottom:200px; } }
 
   /* =========================================================
      EFFETTO 3D GLOBALE — profondità, prospettiva e rilievo
@@ -646,6 +654,7 @@
 <div id="toastWrap"></div>
 
 <button type="button" id="staffFab" class="staff-fab" onclick="showPage('staff', null)" title="Area Staff" aria-label="Area Staff">🔒</button>
+<button type="button" id="listinoFab" class="listino-fab" onclick="toggleListino()" title="Listino selezionati" aria-label="Listino selezionati">📋<span id="listinoFabCount" class="listino-fab-count"></span></button>
 
 <div id="page-listino" class="page active">
 <div class="ricerca-wrap">
@@ -658,31 +667,18 @@
 <div class="ricerca-conta" id="ricercaConta"></div>
 <div class="layout">
   <div class="categories-grid" id="categories"></div>
-  <aside class="summary-panel">
-    <h2 class="summary-title">Listino</h2>
+  <aside class="summary-panel" id="summaryPanel">
+    <div class="summary-head">
+      <h2 class="summary-title">Listino</h2>
+      <button type="button" class="summary-close" onclick="toggleListino(false)" title="Chiudi" aria-label="Chiudi">✕</button>
+    </div>
     <div class="summary-list" id="summaryList"><p class="summary-empty">Nessun articolo inserito.</p></div>
     <div class="summary-total"><span>Da dare</span><span id="summaryGive">$0.00</span></div>
     <div class="summary-total summary-total-2"><span>Fattura</span><span id="summaryInvoice">$0.00</span></div>
   </aside>
 </div>
 
-<div id="listinoRiepilogo" class="fatt-wrap" style="max-width:1240px; margin:4px auto 120px;"></div>
 
-<div class="footer-bar">
-  <div class="footer-inner">
-    <button class="reset-btn" onclick="resetAll()">Svuota registro</button>
-    <div class="totals">
-      <div class="grand-total">
-        <span class="label">Da dare</span>
-        <span class="amount" id="totalGive">$0.00</span>
-      </div>
-      <div class="grand-total">
-        <span class="label">Fattura</span>
-        <span class="amount" id="totalInvoice">$0.00</span>
-      </div>
-    </div>
-  </div>
-</div>
 </div><!-- /page-listino -->
 
 <div id="page-attrezzi" class="page">
@@ -1087,13 +1083,31 @@ function calculate(){
     if (isAttrezziCat) attrezziInvoice += Math.abs(subtotal);
   });
   const fmt = v => `$${v.toFixed(2)}`;
-  document.getElementById("totalGive").textContent = fmt(give);
-  document.getElementById("totalInvoice").textContent = fmt(invoice);
+  const elTG = document.getElementById("totalGive"); if (elTG) elTG.textContent = fmt(give);
+  const elTI = document.getElementById("totalInvoice"); if (elTI) elTI.textContent = fmt(invoice);
   const elAttrInv = document.getElementById("attrezziInvoice"); if (elAttrInv) elAttrInv.textContent = fmt(attrezziInvoice);
   const elAttrCnt = document.getElementById("attrezziCount"); if (elAttrCnt) elAttrCnt.textContent = String(attrezziCount);
   renderAttrezziFattura(active, attrezziInvoice);
-  renderListinoFattura(active, give, invoice);
   renderSummary(active, give, invoice);
+  aggiornaListinoDrawer(active.length);
+}
+
+let _prevListinoCount = 0;
+function toggleListino(force){
+  const p = document.getElementById('summaryPanel');
+  if (!p) return;
+  const open = (typeof force === 'boolean') ? force : !p.classList.contains('open');
+  p.classList.toggle('open', open);
+}
+function aggiornaListinoDrawer(count){
+  const badge = document.getElementById('listinoFabCount');
+  if (badge){
+    badge.textContent = String(count);
+    badge.classList.toggle('show', count > 0);
+  }
+  // si apre da solo quando inizi a usarlo (0 -> >0)
+  if (count > 0 && _prevListinoCount === 0) toggleListino(true);
+  _prevListinoCount = count;
 }
 
 function renderListinoFattura(active, give, invoice){
@@ -1183,6 +1197,7 @@ function resetAll(){
     });
   });
   calculate();
+  toggleListino(false);
 }
 
 function resetAttrezzi(){
@@ -1196,6 +1211,7 @@ function resetAttrezzi(){
 }
 
 calculate();
+toggleListino(true);
 
 /* ===== Modifica prezzi listino (solo staff) ===== */
 let prezziRef = null;
@@ -1377,6 +1393,9 @@ function showPage(page, btn){
   }
   if (page === 'staff'){ renderStaffPage(); const n=document.getElementById('staffNome'); if(n && !isChatStaff){ try{n.value=staffNomeOp||'';}catch(e){} } }
   if (page === 'torneo'){ const dot = document.getElementById('tabTorneoDot'); if (dot) dot.classList.remove('show'); }
+  const lf = document.getElementById('listinoFab');
+  if (lf) lf.style.display = (page === 'listino') ? 'flex' : 'none';
+  if (page !== 'listino') toggleListino(false);
   window.scrollTo(0, 0);
 }
 
