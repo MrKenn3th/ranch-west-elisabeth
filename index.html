@@ -210,6 +210,18 @@
 
   .reset-btn{ background: transparent; border: 1px solid var(--ink-red); color: var(--ink-red); padding: 9px 16px; font-family: Georgia, serif; font-variant: small-caps; font-size: 13.5px; letter-spacing: .5px; border-radius: 0; cursor: pointer; transition: background .15s, color .15s, box-shadow .15s; }
   .reset-btn:hover{ background: var(--ink-red); color: var(--paper); box-shadow: 0 3px 10px rgba(138,47,34,.4); }
+  .fatt-wrap{ margin-top: 24px; }
+  .fatt-table{ width: 100%; border-collapse: collapse; background: var(--paper-deep); border-radius: 8px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,.3), inset 0 1px 1px rgba(255,255,255,.35); font-family: 'Special Elite', monospace; }
+  .fatt-table caption{ caption-side: top; text-align: left; font-family: 'IM Fell English SC', Georgia, serif; font-size: 20px; font-weight: 700; color: var(--ink); text-transform: uppercase; letter-spacing: .5px; padding: 0 4px 12px; }
+  .fatt-table th, .fatt-table td{ padding: 10px 14px; border-bottom: 1px solid var(--rule); font-size: 14.5px; color: var(--ink); text-align: left; }
+  .fatt-table thead th{ background: rgba(0,0,0,.08); font-size: 12.5px; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-soft); font-weight: 700; }
+  .fatt-table td.num, .fatt-table th.num{ text-align: right; white-space: nowrap; }
+  .fatt-table td.muted{ color: var(--ink-soft); font-size: 12.5px; }
+  .fatt-table tbody tr:nth-child(even){ background: rgba(0,0,0,.035); }
+  .fatt-table tfoot td{ border-top: 2px solid var(--rule); border-bottom: none; background: rgba(199,154,59,.14); }
+  .fatt-tot-label{ text-transform: uppercase; letter-spacing: .5px; font-weight: 700; color: var(--ink-soft); }
+  .fatt-tot-val{ font-family: 'Courier New', monospace; font-weight: 700; font-size: 19px; color: var(--ink); }
+  .fatt-empty{ font-family: 'Special Elite', monospace; font-size: 13px; color: var(--ink-soft); font-style: italic; padding: 14px; background: var(--paper-deep); border-radius: 8px; box-shadow: inset 0 1px 1px rgba(255,255,255,.35); }
 
   @media (max-width: 900px){
     .layout{ grid-template-columns: 1fr; }
@@ -377,30 +389,48 @@
   .torneo-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px; }
   .torneo-badge{ font-family:'Special Elite',monospace; font-size:12.5px; font-weight:700; color:var(--paper); background:var(--gold); padding:4px 11px; white-space:nowrap; }
   .torneo-divider{ border-top:3px double var(--rule); margin:24px 0 20px; }
+  .sfida-btns{ display:flex; gap:10px; flex-wrap:wrap; align-items:stretch; margin-top:6px; }
+  .sfida-btns .reg-add-btn{ flex:1 1 auto; }
+  .sfida-remove-btn{ flex:0 0 auto; display:inline-flex; align-items:center; gap:6px; font-family:'Special Elite',monospace; font-size:12.5px; letter-spacing:.3px; color:var(--ink-red); background:transparent; border:1px solid var(--ink-red); border-radius:6px; padding:0 16px; cursor:pointer; white-space:nowrap; transition:background .15s, color .15s, box-shadow .15s; }
+  .sfida-remove-btn:hover{ background:var(--ink-red); color:var(--paper); box-shadow:0 3px 10px rgba(138,47,34,.4); }
+  .sfida-remove-btn:active{ transform:translateY(1px); }
+  .sfida-card{ background:var(--paper-deep); border-radius:6px; border-top:1px solid rgba(255,255,255,.4); border-right:1px solid rgba(0,0,0,.18); border-bottom:2px solid rgba(0,0,0,.26); border-left:4px solid var(--gold); box-shadow:0 6px 14px rgba(0,0,0,.28), inset 0 1px 1px rgba(255,255,255,.35); padding:14px 16px; margin-bottom:16px; }
+  .sfida-card-head{ font-family:'IM Fell English SC',Georgia,serif; font-size:18px; font-weight:700; color:var(--ink); text-transform:uppercase; letter-spacing:.5px; padding-bottom:10px; margin-bottom:10px; border-bottom:1px dashed var(--rule); }
+  .sfida-obj{ margin-bottom:12px; }
+  .sfida-obj:last-child{ margin-bottom:0; }
+  .sfida-obj-top{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; font-family:'Special Elite',monospace; font-size:14.5px; color:var(--ink); font-weight:700; margin-bottom:4px; }
+  .sfida-obj-num{ color:var(--gold); white-space:nowrap; }
+  .sfida-obj.done .sfida-obj-num{ color:#2f7d32; }
+  .sfida-bar{ height:12px; background:rgba(0,0,0,.14); border-radius:6px; overflow:hidden; box-shadow:inset 0 1px 2px rgba(0,0,0,.3); }
+  .sfida-bar-fill{ height:100%; background:linear-gradient(90deg,var(--gold),#c79a3b); transition:width .3s ease; }
+  .sfida-obj.done .sfida-bar-fill{ background:linear-gradient(90deg,#4caf50,#2f7d32); }
+  .sfida-goal{ font-family:'Special Elite',monospace; font-size:13px; color:var(--ink-soft); margin-bottom:12px; line-height:1.6; }
+  .sfida-goal b{ color:var(--ink); }
+  .sfida-rank-row{ margin-bottom:7px; padding:6px 9px; border-radius:5px; background:rgba(0,0,0,.05); border-left:3px solid var(--rule); }
+  .sfida-rank-row:last-child{ margin-bottom:0; }
+  .sfida-rank-row.winner{ background:rgba(199,154,59,.16); border-left:3px solid var(--gold); box-shadow:inset 0 1px 1px rgba(255,255,255,.35); }
+  .sfida-rank-row.done{ border-left-color:#2f7d32; }
+  .sfida-rank-row .sfida-obj-top{ font-size:12.5px; margin-bottom:3px; }
+  .sfida-rank-row .sfida-bar{ height:7px; border-radius:4px; }
+  .sfida-chips{ display:flex; flex-wrap:wrap; gap:4px; margin-top:5px; }
+  .sfida-chip{ font-family:'Special Elite',monospace; font-size:10px; color:var(--ink-soft); background:rgba(0,0,0,.08); padding:1px 6px; border-radius:8px; }
+  .sfida-chip.ok{ color:var(--paper); background:#2f7d32; font-weight:700; }
   .part-card{ background:var(--paper-deep); border-radius:6px; border-top:1px solid rgba(255,255,255,.4); border-right:1px solid rgba(0,0,0,.18); border-bottom:2px solid rgba(0,0,0,.26); border-left:4px solid var(--gold); box-shadow:0 6px 14px rgba(0,0,0,.28), inset 0 1px 1px rgba(255,255,255,.35); padding:14px 16px; }
   .part-top{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding-bottom:8px; border-bottom:1px dashed var(--rule); }
   .part-nome{ font-family:'IM Fell English SC',Georgia,serif; font-size:19px; color:var(--ink); font-weight:700; }
   .part-data{ font-family:'Special Elite',monospace; font-size:13px; color:var(--ink-soft); }
-  .part-del{ background:transparent; border:1px solid var(--ink-red); color:var(--ink-red); font-family:'Special Elite',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.5px; padding:4px 9px; cursor:pointer; white-space:nowrap; }
-  .part-del:hover{ background:var(--ink-red); color:var(--paper); }
+  .part-del{ display:inline-flex; align-items:center; gap:5px; background:transparent; border:1px solid var(--ink-red); color:var(--ink-red); font-family:'Special Elite',monospace; font-size:11px; letter-spacing:.4px; padding:5px 11px; border-radius:6px; cursor:pointer; white-space:nowrap; transition:background .15s, color .15s, box-shadow .15s; }
+  .part-del:hover{ background:var(--ink-red); color:var(--paper); box-shadow:0 3px 9px rgba(138,47,34,.35); }
+  .part-del:active{ transform:translateY(1px); }
   .part-deliveries{ margin-top:10px; display:flex; flex-direction:column; gap:6px; }
   .part-deliv-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; font-family:'Special Elite',monospace; font-size:14.5px; color:var(--ink); }
   .part-deliv-qta{ color:var(--gold); font-weight:700; margin-right:4px; }
-  .part-deliv-del{ background:transparent; border:none; color:var(--ink-soft); font-size:13px; cursor:pointer; padding:0 2px; }
-  .part-deliv-del:hover{ color:var(--ink-red); }
+  .part-deliv-del{ display:inline-flex; align-items:center; gap:4px; background:transparent; border:1px solid rgba(138,47,34,.55); color:var(--ink-red); font-family:'Special Elite',monospace; font-size:10.5px; letter-spacing:.2px; cursor:pointer; padding:3px 9px; border-radius:6px; white-space:nowrap; transition:background .15s, color .15s; }
+  .part-deliv-del:hover{ background:var(--ink-red); color:var(--paper); }
   .part-empty-deliv{ font-family:'Special Elite',monospace; font-size:12.5px; color:var(--ink-soft); font-style:italic; margin:10px 0 0; }
   .part-total-row{ display:flex; justify-content:space-between; align-items:baseline; margin-top:10px; padding-top:8px; border-top:2px solid var(--rule); font-family:'Special Elite',monospace; }
   .part-total-label{ font-size:13px; text-transform:uppercase; letter-spacing:.5px; color:var(--ink-soft); font-weight:700; }
   .part-total-val{ font-size:18px; color:var(--gold); font-weight:700; }
-  .totals-row{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; background:var(--paper-deep); border-radius:6px; border-top:1px solid rgba(255,255,255,.4); border-right:1px solid rgba(0,0,0,.18); border-bottom:2px solid rgba(0,0,0,.26); border-left:4px solid var(--gold); box-shadow:0 5px 12px rgba(0,0,0,.26), inset 0 1px 1px rgba(255,255,255,.35); padding:10px 14px; font-family:'Special Elite',monospace; }
-  .totals-name{ font-size:15.5px; color:var(--ink); font-weight:700; }
-  .totals-qta{ font-size:16px; color:var(--gold); font-weight:700; }
-  .totals-chart{ margin-top:16px; display:flex; flex-direction:column; gap:12px; }
-  .chart-bar-row{ display:flex; flex-direction:column; gap:4px; }
-  .chart-bar-label{ display:flex; justify-content:space-between; align-items:baseline; font-family:'Special Elite',monospace; font-size:14px; color:var(--ink); font-weight:700; }
-  .chart-bar-label .cnt{ color:var(--gold); }
-  .chart-bar-track{ background:var(--paper); border-radius:5px; border-top:1px solid rgba(0,0,0,.25); border-left:1px solid rgba(0,0,0,.2); box-shadow:inset 0 2px 5px rgba(0,0,0,.3); height:22px; overflow:hidden; }
-  .chart-bar-fill{ height:100%; background:linear-gradient(90deg, var(--gold), var(--ink-red)); min-width:2px; transition:width .3s; }
   .torneo-reset{ text-align:center; margin-top:4px; }
   .torneo-reset-btn{ font-family:'IM Fell English SC',Georgia,serif; text-transform:uppercase; letter-spacing:.5px; font-size:16px; color:var(--paper); background:var(--ink-red); border:none; border-radius:6px; padding:12px 22px; cursor:pointer; box-shadow:0 5px 14px rgba(138,47,34,.4), inset 0 1px 0 rgba(255,255,255,.3); transition:transform .15s, box-shadow .15s, opacity .15s; }
   .torneo-reset-btn:hover{ transform:translateY(-2px); box-shadow:0 9px 20px rgba(138,47,34,.5), inset 0 1px 0 rgba(255,255,255,.35); opacity:.95; }
@@ -560,6 +590,36 @@
     .reg-form-panel:hover, .reg-orders-panel:hover, .summary-panel:hover, .chat-panel:hover,
     .part-card:hover, .order-card:hover, .storico-card:hover, .nav-tab:hover, .nav-tab.active{ transform: none; }
   }
+
+  /* Torneo di Caccia: NESSUN effetto 3D (richiesto esplicitamente) */
+  #page-torneo{ perspective: none; }
+  #page-torneo .reg-layout, #page-torneo .torneo-forms,
+  #page-torneo .reg-orders-panel, #page-torneo .reg-form-panel{ perspective: none; }
+  #page-torneo .reg-form-panel, #page-torneo .reg-orders-panel,
+  #page-torneo .part-card, #page-torneo .storico-card{
+    transform: none !important;
+    transform-style: flat;
+    transition: box-shadow .2s ease;
+  }
+  #page-torneo .reg-form-panel:hover, #page-torneo .reg-orders-panel:hover,
+  #page-torneo .part-card:hover, #page-torneo .storico-card:hover{
+    transform: none !important;
+  }
+  #page-torneo .reg-add-btn, #page-torneo .torneo-reset-btn, #page-torneo .tco-toggle{
+    transform: none !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,.25), inset 0 2px 2px rgba(255,255,255,.2);
+    transition: opacity .15s ease, box-shadow .15s ease;
+  }
+  #page-torneo .reg-add-btn:hover, #page-torneo .torneo-reset-btn:hover, #page-torneo .tco-toggle:hover{
+    transform: none !important;
+    opacity: .92;
+  }
+  #page-torneo .reg-add-btn:active, #page-torneo .torneo-reset-btn:active, #page-torneo .tco-toggle:active{
+    transform: none !important;
+    opacity: .82;
+  }
+  #page-torneo .reg-panel-title, #page-torneo .reg-page-title{ text-shadow: 0 1px 0 rgba(255,255,255,.55); }
+  #page-torneo .tco-row.on{ transform: none; }
 </style>
 </head>
 <body>
@@ -624,7 +684,7 @@
 </div><!-- /page-listino -->
 
 <div id="page-attrezzi" class="page">
-  <div class="reg-layout" style="grid-template-columns:1fr; max-width:1240px;">
+  <div class="reg-layout" style="grid-template-columns:1fr; max-width:1240px; padding-bottom:110px;">
     <div style="grid-column:1/-1;">
       <div class="reg-intro" style="margin-bottom:18px;">
         <h1 class="reg-page-title">🛠️ Attrezzi</h1>
@@ -639,6 +699,22 @@
       </div>
       <div class="ricerca-conta" id="ricercaContaAttr"></div>
       <div class="categories-grid" id="categories-attrezzi"></div>
+      <div id="attrezziRiepilogo" class="fatt-wrap"></div>
+    </div>
+  </div>
+  <div class="footer-bar">
+    <div class="footer-inner">
+      <button class="reset-btn" onclick="resetAttrezzi()">Svuota selezione</button>
+      <div class="totals">
+        <div class="grand-total">
+          <span class="label">Materiali selezionati</span>
+          <span class="amount" id="attrezziCount">0</span>
+        </div>
+        <div class="grand-total">
+          <span class="label">Fattura attrezzi</span>
+          <span class="amount" id="attrezziInvoice">$0.00</span>
+        </div>
+      </div>
     </div>
   </div>
 </div><!-- /page-attrezzi -->
@@ -699,12 +775,24 @@
   <div class="reg-layout">
     <div class="torneo-forms">
       <aside class="reg-form-panel">
+        <h3 class="reg-panel-title">🎯 Crea la sfida</h3>
+        <p class="reg-panel-sub">Scegli gli oggetti da cacciare e l’obiettivo di pezzi da raggiungere.</p>
+        <button type="button" class="tco-toggle" id="sfToggle" onclick="toggleSfList()"><span id="sfToggleLabel">▼ Scegli oggetti</span><span class="tco-count" id="sfCount"></span></button>
+        <div class="tco-list" id="sfOggettiList"></div>
+        <div class="sfida-btns">
+          <button class="reg-add-btn" onclick="creaSfida()">🎯 Crea sfida</button>
+          <button type="button" class="sfida-remove-btn" onclick="rimuoviSfida()">🗑 Rimuovi sfida</button>
+        </div>
+        <p class="torneo-hint">Imposta la quantita obiettivo per ogni oggetto. Lascia a 0 gli oggetti che non fanno parte della sfida.</p>
+      </aside>
+
+      <aside class="reg-form-panel">
         <h3 class="reg-panel-title">Iscrizione</h3>
         <p class="reg-panel-sub">Iscrivi un partecipante al torneo.</p>
         <label class="reg-field"><span>Partecipante</span><input type="text" id="tpNome" placeholder="Nome partecipante"></label>
         <label class="reg-field"><span>Data di iscrizione</span><input type="date" id="tpData"></label>
         <button class="reg-add-btn" onclick="addParticipant()">🏹 Iscriviti</button>
-        <p class="torneo-hint">Puoi partecipare una sola volta. Puoi annullare l’iscrizione senza cancellare le consegne già registrate.</p>
+        <p class="torneo-hint">Possono iscriversi più persone: vince chi porta per primo tutta la roba della sfida. Puoi annullare l’iscrizione senza cancellare le consegne già registrate.</p>
       </aside>
 
       <aside class="reg-form-panel">
@@ -726,24 +814,10 @@
         </div>
         <span class="torneo-badge" id="partBadge">0 iscritti</span>
       </div>
+      <div id="sfidaActive"></div>
       <div class="reg-orders-list" id="partList">
         <p class="reg-empty">Nessun iscritto. Usa il modulo qui a sinistra per iniziare.</p>
       </div>
-
-      <div class="torneo-divider"></div>
-
-      <div class="torneo-head">
-        <div>
-          <h3 class="reg-panel-title">Totali per oggetto</h3>
-          <p class="reg-panel-sub">Classifica del bottino di caccia.</p>
-        </div>
-        <span class="torneo-badge" id="totalBadge">0 pezzi</span>
-      </div>
-      <div class="reg-orders-list" id="totalsList">
-        <p class="reg-empty">Nessuna consegna ancora registrata.</p>
-      </div>
-
-      <div class="totals-chart" id="totalsChart"></div>
 
       <div class="torneo-divider"></div>
       <div class="torneo-reset">
@@ -982,10 +1056,12 @@ function removeCube(ci, ii){
 
 function calculate(){
   let give = 0, invoice = 0;
+  let attrezziInvoice = 0, attrezziCount = 0;
   const active = [];
   data.forEach((cat, ci) => {
     let subtotal = 0;
     const sign = cat.negative ? -1 : 1;
+    const isAttrezziCat = ATTREZZI_CATS.includes(cat.name);
     cat.items.forEach((item, ii) => {
       const cubes = document.querySelectorAll(`.qty-cube[data-ci="${ci}"][data-ii="${ii}"]`);
       let qty = 0;
@@ -1001,15 +1077,47 @@ function calculate(){
       subtotal += rowTotal;
       if (qty > 0){
         active.push({ name: item.n, cat: cat.name, qty, value: rowTotal });
+        if (isAttrezziCat) attrezziCount++;
       }
     });
     document.getElementById(`subtotal-${ci}`).textContent = `${subtotal < 0 ? "-" : ""}$${Math.abs(subtotal).toFixed(2)}`;
     if (cat.negative) invoice += Math.abs(subtotal); else give += subtotal;
+    if (isAttrezziCat) attrezziInvoice += Math.abs(subtotal);
   });
   const fmt = v => `$${v.toFixed(2)}`;
   document.getElementById("totalGive").textContent = fmt(give);
   document.getElementById("totalInvoice").textContent = fmt(invoice);
+  const elAttrInv = document.getElementById("attrezziInvoice"); if (elAttrInv) elAttrInv.textContent = fmt(attrezziInvoice);
+  const elAttrCnt = document.getElementById("attrezziCount"); if (elAttrCnt) elAttrCnt.textContent = String(attrezziCount);
+  renderAttrezziFattura(active, attrezziInvoice);
   renderSummary(active, give, invoice);
+}
+
+function renderAttrezziFattura(active, totale){
+  const box = document.getElementById('attrezziRiepilogo');
+  if (!box) return;
+  const righe = active.filter(a => ATTREZZI_CATS.includes(a.cat));
+  if (righe.length === 0){
+    box.innerHTML = '<div class="fatt-empty">Nessun materiale selezionato: imposta le quantit\u00e0 per generare il riepilogo fattura.</div>';
+    return;
+  }
+  const body = righe.map(a => {
+    const unit = a.qty ? Math.abs(a.value) / a.qty : 0;
+    return `<tr>
+      <td>${esc(a.name)}</td>
+      <td class="muted">${esc(a.cat)}</td>
+      <td class="num">×${a.qty}</td>
+      <td class="num">$${unit.toFixed(2)}</td>
+      <td class="num">$${Math.abs(a.value).toFixed(2)}</td>
+    </tr>`;
+  }).join('');
+  box.innerHTML = `
+    <table class="fatt-table">
+      <caption>🧾 Riepilogo fattura — Attrezzi</caption>
+      <thead><tr><th>Materiale</th><th>Categoria</th><th class="num">Q.t\u00e0</th><th class="num">Prezzo</th><th class="num">Totale</th></tr></thead>
+      <tbody>${body}</tbody>
+      <tfoot><tr><td colspan="4" class="fatt-tot-label">Totale fattura</td><td class="num fatt-tot-val">$${totale.toFixed(2)}</td></tr></tfoot>
+    </table>`;
 }
 
 function renderSummary(active, give, invoice){
@@ -1036,6 +1144,16 @@ function renderSummary(active, give, invoice){
 
 function resetAll(){
   document.querySelectorAll(".qty-cubes").forEach(container => {
+    const cubes = container.querySelectorAll(".qty-cube");
+    cubes.forEach((c, idx) => {
+      if (idx < 1){ c.value = ""; } else { container.removeChild(c); }
+    });
+  });
+  calculate();
+}
+
+function resetAttrezzi(){
+  document.querySelectorAll("#categories-attrezzi .qty-cubes").forEach(container => {
     const cubes = container.querySelectorAll(".qty-cube");
     cubes.forEach((c, idx) => {
       if (idx < 1){ c.value = ""; } else { container.removeChild(c); }
@@ -1993,10 +2111,11 @@ function initConsegnaCaccia(){
   tcOggNames = [];
   let html = '';
   const visti = new Set();
+  const soloSfida = (sfida && sfida.obiettivi && sfida.obiettivi.length) ? new Set(sfida.obiettivi.map(o => o.oggetto.toLowerCase())) : null;
   data.forEach(cat => {
     if (cat.name !== 'Caccia') return; // solo i derivati della caccia (niente esche, trappole, attrezzi/coltelli)
     const righe = cat.items
-      .filter(it => { const k = it.n.toLowerCase(); if (visti.has(k)) return false; visti.add(k); return true; })
+      .filter(it => { const k = it.n.toLowerCase(); if (visti.has(k)) return false; visti.add(k); if (soloSfida && !soloSfida.has(k)) return false; return true; })
       .map(it => {
         const idx = tcOggNames.length;
         tcOggNames.push(it.n);
@@ -2037,6 +2156,90 @@ function tcOggSet(idx, raw){
   if (rowEl) rowEl.classList.toggle('on', v > 0);
   updateTcoCount();
 }
+/* ===== Sfida: selezione oggetti obiettivo ===== */
+let sfida = null;
+try { sfida = JSON.parse(localStorage.getItem('avamposto_torneo_sfida') || 'null'); } catch(e){ sfida = null; }
+let sfOggNames = [];
+let sfOggQ = {};
+function loadSfOggQFromSfida(){
+  sfOggQ = {};
+  if (sfida && sfida.obiettivi){ sfida.obiettivi.forEach(o => { if (o.target > 0) sfOggQ[o.oggetto] = o.target; }); }
+}
+function initSfidaSelect(){
+  const box = document.getElementById('sfOggettiList');
+  if (!box) return;
+  sfOggNames = [];
+  let html = '';
+  const visti = new Set();
+  data.forEach(cat => {
+    if (cat.name !== 'Caccia') return;
+    const righe = cat.items
+      .filter(it => { const k = it.n.toLowerCase(); if (visti.has(k)) return false; visti.add(k); return true; })
+      .map(it => {
+        const idx = sfOggNames.length;
+        sfOggNames.push(it.n);
+        const val = sfOggQ[it.n] ? sfOggQ[it.n] : 0;
+        return '<div class="tco-row' + (val > 0 ? ' on' : '') + '" id="sforow-' + idx + '">'
+          + '<span class="tco-name">' + esc(it.n) + '</span>'
+          + '<span class="tco-step">'
+          + '<input type="number" inputmode="numeric" min="0" step="1" class="tco-val" id="sfoval-' + idx + '" value="' + val + '" oninput="sfOggSet(' + idx + ', this.value)" onfocus="this.select()">'
+          + '</span></div>';
+      }).join('');
+    if (righe) html += '<div class="tco-group-label">' + esc(cat.name) + '</div>' + righe;
+  });
+  box.innerHTML = html || '<p class="reg-empty" style="padding:10px;">Nessun oggetto di caccia disponibile.</p>';
+  box.classList.add('collapsed');
+  const lab = document.getElementById('sfToggleLabel'); if (lab) lab.textContent = '▼ Scegli oggetti';
+  updateSfCount();
+}
+function toggleSfList(){
+  const box = document.getElementById('sfOggettiList');
+  const lab = document.getElementById('sfToggleLabel');
+  if (!box) return;
+  const aperto = box.classList.toggle('collapsed') === false;
+  if (lab) lab.textContent = (aperto ? '▲ Chiudi elenco' : '▼ Scegli oggetti');
+}
+function updateSfCount(){
+  const c = document.getElementById('sfCount');
+  if (!c) return;
+  const tot = Object.keys(sfOggQ).filter(k => sfOggQ[k] > 0).length;
+  c.textContent = tot > 0 ? String(tot) : '';
+}
+function sfOggSet(idx, raw){
+  const nome = sfOggNames[idx];
+  if (nome == null) return;
+  let v = parseInt(raw, 10);
+  if (isNaN(v) || v < 0) v = 0;
+  if (v === 0) delete sfOggQ[nome]; else sfOggQ[nome] = v;
+  const rowEl = document.getElementById('sforow-' + idx);
+  if (rowEl) rowEl.classList.toggle('on', v > 0);
+  updateSfCount();
+}
+function creaSfida(){
+  const obiettivi = Object.keys(sfOggQ).filter(k => sfOggQ[k] > 0).map(k => ({ oggetto: k, target: sfOggQ[k] }));
+  if (obiettivi.length === 0){ alert('Seleziona almeno un oggetto e imposta l\u2019obiettivo di pezzi.'); return; }
+  sfida = { id: Date.now(), obiettivi, data: todayStr() };
+  saveTorneo();
+  fbSfidaSet(sfida);
+  loadSfOggQFromSfida();
+  initSfidaSelect();
+  initConsegnaCaccia();
+  renderTorneo();
+}
+function rimuoviSfida(){
+  if (!sfida){ alert('Non c\u2019\u00e8 nessuna sfida impostata.'); return; }
+  if (!confirm('Rimuovere la sfida in corso? Gli oggetti torneranno tutti disponibili per le consegne.')) return;
+  sfida = null;
+  saveTorneo();
+  fbSfidaClear();
+  sfOggQ = {};
+  initSfidaSelect();
+  initConsegnaCaccia();
+  renderTorneo();
+}
+
+loadSfOggQFromSfida();
+initSfidaSelect();
 initConsegnaCaccia();
 renderOrders();
 initFirebase();
@@ -2056,12 +2259,15 @@ function saveTorneo(){
     localStorage.setItem('avamposto_torneo_part', JSON.stringify(participants));
     localStorage.setItem('avamposto_torneo_cons', JSON.stringify(deliveries));
     localStorage.setItem('avamposto_torneo_storico', JSON.stringify(storico));
+    localStorage.setItem('avamposto_torneo_sfida', JSON.stringify(sfida));
   } catch(e){}
 }
 // Scritture granulari su Firebase (per-elemento) per evitare sovrascritture e perdite
 function fbTorneoSet(coll, id, obj){ if (torneoRef){ try { torneoRef.child(coll).child(String(id)).set(obj); } catch(e){} } }
 function fbTorneoRemove(coll, id){ if (torneoRef){ try { torneoRef.child(coll).child(String(id)).remove(); } catch(e){} } }
 function fbTorneoClear(coll){ if (torneoRef){ try { torneoRef.child(coll).remove(); } catch(e){} } }
+function fbSfidaSet(obj){ if (torneoRef){ try { torneoRef.child('sfida').set(obj); } catch(e){} } }
+function fbSfidaClear(){ if (torneoRef){ try { torneoRef.child('sfida').remove(); } catch(e){} } }
 function _objToArr(v){ if (!v) return []; return Array.isArray(v) ? v.filter(Boolean) : Object.values(v); }
 let _torneoKnownPart = null, _torneoKnownDeliv = null, _torneoKnownStor = null;
 function initTorneoFirebase(){
@@ -2088,11 +2294,20 @@ function initTorneoFirebase(){
       _torneoKnownDeliv = new Set(nd.map(d => d.id));
       _torneoKnownStor = new Set(ns.map(s => s.id));
       participants = np; deliveries = nd; storico = ns;
+      const nuovaSfida = (val.sfida && val.sfida.obiettivi) ? val.sfida : null;
+      const sfidaCambiata = JSON.stringify(nuovaSfida) !== JSON.stringify(sfida);
+      sfida = nuovaSfida;
       try {
         localStorage.setItem('avamposto_torneo_part', JSON.stringify(participants));
         localStorage.setItem('avamposto_torneo_cons', JSON.stringify(deliveries));
         localStorage.setItem('avamposto_torneo_storico', JSON.stringify(storico));
+        localStorage.setItem('avamposto_torneo_sfida', JSON.stringify(sfida));
       } catch(e){}
+      if (sfidaCambiata){
+        loadSfOggQFromSfida();
+        if (typeof initSfidaSelect === 'function') initSfidaSelect();
+        if (typeof initConsegnaCaccia === 'function') initConsegnaCaccia();
+      }
       if (typeof renderTorneo === 'function') renderTorneo();
       if (typeof renderStorico === 'function') renderStorico();
     });
@@ -2131,10 +2346,13 @@ function addParticipant(){
 
 function removeParticipant(id){
   const p = participants.find(x => x.id === id);
-  if (p && !confirm('Annullare l\u2019iscrizione di "' + p.nome + '"? Le consegne gi\u00e0 registrate restano.')) return;
+  if (p && !confirm('Annullare l’iscrizione di "' + p.nome + '"? Verranno rimosse anche le sue consegne.')) return;
+  const delsPart = deliveries.filter(x => x.partId === id);
   participants = participants.filter(x => x.id !== id);
+  deliveries = deliveries.filter(x => x.partId !== id);
   saveTorneo();
   fbTorneoRemove('participants', id);
+  delsPart.forEach(d => fbTorneoRemove('deliveries', d.id));
   renderTorneo();
 }
 
@@ -2170,7 +2388,10 @@ function removeDelivery(id){
   renderTorneo();
 }
 function removeDeliveryObj(partId, oggetto){
+  try { oggetto = decodeURIComponent(oggetto); } catch(e){}
   const daRimuovere = deliveries.filter(x => x.partId === partId && x.oggetto === oggetto);
+  if (daRimuovere.length === 0) return;
+  if (!confirm('Rimuovere "' + oggetto + '" dalle consegne di questo partecipante?')) return;
   deliveries = deliveries.filter(x => !(x.partId === partId && x.oggetto === oggetto));
   saveTorneo();
   daRimuovere.forEach(d => fbTorneoRemove('deliveries', d.id));
@@ -2195,6 +2416,12 @@ function resetTorneo(){
   });
   let vincitore = '', vincQta = 0;
   Object.keys(totPerPart).forEach(n => { if (totPerPart[n] > vincQta){ vincQta = totPerPart[n]; vincitore = n; } });
+  // Se c'e una sfida, vince chi ha portato per primo tutta la roba
+  if (sfida && sfida.obiettivi && sfida.obiettivi.length){
+    const st = computeSfidaStandings();
+    const primo = st.find(s => s.completed);
+    if (primo){ vincitore = primo.nome; vincQta = sfida.obiettivi.reduce((s, o) => s + o.target, 0); }
+  }
   const oggetti = Object.keys(totPerObj).sort((a,b) => totPerObj[b] - totPerObj[a]).map(k => ({ nome: k, qta: totPerObj[k] }));
   const archivio0 = {
     id: Date.now(),
@@ -2209,10 +2436,15 @@ function resetTorneo(){
   storico.unshift(archivio0);
   participants = [];
   deliveries = [];
+  sfida = null;
   saveTorneo();
   fbTorneoSet('storico', archivio0.id, archivio0);
   fbTorneoClear('participants');
   fbTorneoClear('deliveries');
+  fbSfidaClear();
+  sfOggQ = {};
+  initSfidaSelect();
+  initConsegnaCaccia();
   renderTorneo();
   renderStorico();
 }
@@ -2254,6 +2486,35 @@ function renderStorico(){
   }).join('');
 }
 
+function computeSfidaStandings(){
+  if (!sfida || !sfida.obiettivi || !sfida.obiettivi.length) return [];
+  const targets = sfida.obiettivi;
+  const totTarget = targets.reduce((s, o) => s + o.target, 0);
+  return participants.map(p => {
+    const dels = deliveries.filter(d => d.partId === p.id).sort((a, b) => (a.id || 0) - (b.id || 0));
+    const acc = {};
+    let completionTime = null;
+    dels.forEach(d => {
+      acc[d.oggetto] = (acc[d.oggetto] || 0) + d.qta;
+      if (completionTime === null && targets.every(o => (acc[o.oggetto] || 0) >= o.target)){
+        completionTime = d.id || 0;
+      }
+    });
+    const prog = targets.reduce((s, o) => s + Math.min(acc[o.oggetto] || 0, o.target), 0);
+    const pct = totTarget > 0 ? Math.round(prog / totTarget * 100) : 0;
+    return {
+      partId: p.id, nome: p.nome, pct,
+      completed: completionTime !== null, completionTime,
+      dettaglio: targets.map(o => ({ oggetto: o.oggetto, got: acc[o.oggetto] || 0, target: o.target }))
+    };
+  }).sort((a, b) => {
+    if (a.completed && b.completed) return (a.completionTime || 0) - (b.completionTime || 0);
+    if (a.completed) return -1;
+    if (b.completed) return 1;
+    return b.pct - a.pct;
+  });
+}
+
 function renderTorneo(){
   // menu a tendina partecipanti
   const sel = document.getElementById('tcPart');
@@ -2268,6 +2529,33 @@ function renderTorneo(){
   // lista partecipanti con consegne
   const partList = document.getElementById('partList');
   document.getElementById('partBadge').textContent = participants.length + (participants.length === 1 ? ' iscritto' : ' iscritti');
+
+  // sfida in corso: gara tra partecipanti, vince chi porta per primo tutta la roba
+  const sfBox = document.getElementById('sfidaActive');
+  if (sfBox){
+    if (sfida && sfida.obiettivi && sfida.obiettivi.length){
+      const goal = sfida.obiettivi.map(o => `<b>${esc(o.oggetto)}</b> ×${o.target}`).join(' · ');
+      const standings = computeSfidaStandings();
+      let primoCompletato = true;
+      const rows = standings.length
+        ? standings.map(s => {
+            let stato, cls;
+            if (s.completed && primoCompletato){ stato = '🏆 Vincitore!'; cls = ' winner'; primoCompletato = false; }
+            else if (s.completed){ stato = '✓ Completata'; cls = ' done'; }
+            else { stato = s.pct + '%'; cls = ''; }
+            const chips = s.dettaglio.map(x => `<span class="sfida-chip${x.got >= x.target ? ' ok' : ''}">${esc(x.oggetto)} ${Math.min(x.got, x.target)}/${x.target}</span>`).join('');
+            return `<div class="sfida-rank-row${cls}">
+              <div class="sfida-obj-top"><span>${esc(s.nome)}</span><span class="sfida-obj-num">${stato}</span></div>
+              <div class="sfida-bar"><div class="sfida-bar-fill" style="width:${s.pct}%"></div></div>
+              <div class="sfida-chips">${chips}</div>
+            </div>`;
+          }).join('')
+        : '<p class="part-empty-deliv">Nessun iscritto: aggiungi i partecipanti alla gara.</p>';
+      sfBox.innerHTML = `<div class="sfida-card"><div class="sfida-card-head">🎯 Sfida in corso — chi arriva prima vince</div><div class="sfida-goal">Da portare: ${goal}</div>${rows}</div>`;
+    } else {
+      sfBox.innerHTML = '';
+    }
+  }
   if (participants.length === 0){
     partList.innerHTML = '<p class="reg-empty">Nessun iscritto. Usa il modulo qui a sinistra per iniziare.</p>';
   } else {
@@ -2282,7 +2570,7 @@ function renderTorneo(){
         ? `<div class="part-deliveries">${oggKeys.map(o => `
             <div class="part-deliv-row">
               <span>${esc(o)}</span>
-              <span><span class="part-deliv-qta">×${perOgg[o]}</span><button class="part-deliv-del" onclick="removeDeliveryObj(${p.id}, ${JSON.stringify(o).replace(/"/g,'&quot;')})" title="Rimuovi oggetto">✕</button></span>
+              <span><span class="part-deliv-qta">×${perOgg[o]}</span><button class="part-deliv-del" onclick="removeDeliveryObj(${p.id}, '${encodeURIComponent(o).replace(/'/g,'%27')}')" title="Rimuovi questo oggetto">✕ Rimuovi</button></span>
             </div>`).join('')}</div>`
         : '<p class="part-empty-deliv">Nessuna consegna ancora registrata.</p>';
       return `
@@ -2303,36 +2591,6 @@ function renderTorneo(){
     }).join('');
   }
 
-  // totali per oggetto
-  const totalsList = document.getElementById('totalsList');
-  const totals = {};
-  let totPezzi = 0;
-  deliveries.forEach(d => { totals[d.oggetto] = (totals[d.oggetto] || 0) + d.qta; totPezzi += d.qta; });
-  document.getElementById('totalBadge').textContent = totPezzi + (totPezzi === 1 ? ' pezzo' : ' pezzi');
-  const keys = Object.keys(totals).sort((a, b) => totals[b] - totals[a]);
-  if (keys.length === 0){
-    totalsList.innerHTML = '<p class="reg-empty">Nessuna consegna ancora registrata.</p>';
-  } else {
-    totalsList.innerHTML = keys.map(k => `
-      <div class="totals-row">
-        <span class="totals-name">${esc(k)}</span>
-        <span class="totals-qta">×${totals[k]}</span>
-      </div>`).join('');
-  }
-
-  // grafico a barre
-  const chart = document.getElementById('totalsChart');
-  if (keys.length === 0){
-    chart.innerHTML = '';
-  } else {
-    const max = Math.max(...keys.map(k => totals[k]));
-    chart.innerHTML = keys.map(k => {
-      return `
-        <div class="chart-bar-row">
-          <div class="chart-bar-label"><span>${esc(k)}</span><span class="cnt">×${totals[k]}</span></div>
-        </div>`;
-    }).join('');
-  }
 }
 
 renderTorneo();
