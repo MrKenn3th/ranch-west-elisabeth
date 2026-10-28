@@ -106,7 +106,7 @@
   .header h1{ font-family: 'Rye','Impact',serif; font-size: 40px; line-height: 1.05; letter-spacing: 1.5px; margin: 0; color: #f3e8cd; font-weight: normal; text-shadow: 0 1px 0 #7a5a24, 0 2px 0 rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.7); }
   .header .tagline{ font-family: 'Special Elite', monospace; font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: #d8b968; margin-top: 8px; opacity: .92; }
 
-  .layout{ max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr 280px; gap: 14px; align-items: start; }
+  .layout{ max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr 280px; gap: 14px; align-items: start; padding-bottom: 18px; }
 
   .categories-grid{ display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; align-items: start; perspective: 1400px; }
   .cell-caccia{ grid-row: 1; grid-column: 1; }
@@ -666,6 +666,8 @@
   </aside>
 </div>
 
+<div id="listinoRiepilogo" class="fatt-wrap" style="max-width:1240px; margin:4px auto 120px;"></div>
+
 <div class="footer-bar">
   <div class="footer-inner">
     <button class="reset-btn" onclick="resetAll()">Svuota registro</button>
@@ -1090,7 +1092,38 @@ function calculate(){
   const elAttrInv = document.getElementById("attrezziInvoice"); if (elAttrInv) elAttrInv.textContent = fmt(attrezziInvoice);
   const elAttrCnt = document.getElementById("attrezziCount"); if (elAttrCnt) elAttrCnt.textContent = String(attrezziCount);
   renderAttrezziFattura(active, attrezziInvoice);
+  renderListinoFattura(active, give, invoice);
   renderSummary(active, give, invoice);
+}
+
+function renderListinoFattura(active, give, invoice){
+  const box = document.getElementById('listinoRiepilogo');
+  if (!box) return;
+  if (active.length === 0){
+    box.innerHTML = '<div class="fatt-empty">Nessun articolo selezionato: imposta le quantit\u00e0 per generare la tabella riepilogativa.</div>';
+    return;
+  }
+  const body = active.map(a => {
+    const unit = a.qty ? Math.abs(a.value) / a.qty : 0;
+    const neg = a.value < 0;
+    return `<tr>
+      <td>${esc(a.name)}</td>
+      <td class="muted">${esc(a.cat)}</td>
+      <td class="num">\u00d7${a.qty}</td>
+      <td class="num">$${unit.toFixed(2)}</td>
+      <td class="num">${neg ? '-' : ''}$${Math.abs(a.value).toFixed(2)}</td>
+    </tr>`;
+  }).join('');
+  box.innerHTML = `
+    <table class="fatt-table">
+      <caption>\ud83e\uddfe Riepilogo articoli selezionati</caption>
+      <thead><tr><th>Articolo</th><th>Categoria</th><th class="num">Q.t\u00e0</th><th class="num">Prezzo</th><th class="num">Totale</th></tr></thead>
+      <tbody>${body}</tbody>
+      <tfoot>
+        <tr><td colspan="4" class="fatt-tot-label">Totale da dare</td><td class="num fatt-tot-val">$${give.toFixed(2)}</td></tr>
+        <tr><td colspan="4" class="fatt-tot-label">Totale fattura</td><td class="num fatt-tot-val">$${invoice.toFixed(2)}</td></tr>
+      </tfoot>
+    </table>`;
 }
 
 function renderAttrezziFattura(active, totale){
