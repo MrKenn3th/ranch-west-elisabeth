@@ -1242,7 +1242,34 @@ function resetAttrezzi(){
 let acquisti = [];
 try { acquisti = JSON.parse(localStorage.getItem('avamposto_acquisti') || '[]') || []; } catch(e){ acquisti = []; }
 function saveAcquisti(){
+  if (acqReady && acqRef){ try { acqRef.set(acquisti); } catch(e){} }
   try { localStorage.setItem('avamposto_acquisti', JSON.stringify(acquisti)); } catch(e){}
+}
+let acqRef = null, acqReady = false, _acqKnownIds = null;
+function initAcquistiFirebase(){
+  if (!firebaseConfigurato() || typeof firebase === 'undefined') return;
+  try {
+    acqRef = firebase.database().ref('avamposto_acquisti');
+    acqReady = true;
+    acqRef.on('value', snap => {
+      const val = snap.val();
+      const arr = Array.isArray(val) ? val.filter(Boolean) : (val ? Object.values(val) : []);
+      applyRemoteAcquisti(arr);
+    });
+  } catch(e){ console.warn('acquisti firebase ko', e); acqReady = false; }
+}
+function applyRemoteAcquisti(arr){
+  arr.sort((a,b) => (b.id || 0) - (a.id || 0));
+  const nuovi = [];
+  if (_acqKnownIds !== null) arr.forEach(a => { if (!_acqKnownIds.has(a.id)) nuovi.push(a); });
+  _acqKnownIds = new Set(arr.map(a => a.id));
+  acquisti = arr;
+  try { localStorage.setItem('avamposto_acquisti', JSON.stringify(acquisti)); } catch(e){}
+  renderAcquisti();
+  if (nuovi.length && typeof showToast === 'function'){
+    nuovi.forEach(a => showToast('Nuovo acquisto', (a.chi || 'Qualcuno') + ' \u2022 $' + (a.give || 0).toFixed(2)));
+    if (typeof playNotifSound === 'function') playNotifSound();
+  }
 }
 function calcolaListinoAttuale(){
   const active = [];
@@ -2442,6 +2469,7 @@ initConsegnaCaccia();
 renderOrders();
 initFirebase();
 initPrezziFirebase();
+initAcquistiFirebase();
 
 /* ===== Torneo di caccia ===== */
 let participants = [];
