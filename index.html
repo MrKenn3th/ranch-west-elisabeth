@@ -108,18 +108,19 @@
 
   .layout{ max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 14px; align-items: start; padding-bottom: 18px; }
 
-  .categories-grid{ display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; align-items: start; perspective: 1400px; }
+  .categories-grid{ display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; align-items: start; }
   .cell-caccia{ grid-row: 1; grid-column: 1; }
   .cell-esche-caccia{ grid-row: 1; grid-column: 2; }
   .cell-esche-trappole-caccia{ grid-row: 2; grid-column: 2; }
   .cell-trappole{ grid-row: 3; grid-column: 1 / -1; }
-  .cell-vendite{ grid-row: 1; grid-column: 2; }
+  .cell-salone{ grid-row: 1; grid-column: 2; box-shadow: 0 10px 22px rgba(0,0,0,.4), 0 3px 6px rgba(0,0,0,.3), inset 0 2px 2px rgba(255,255,255,.4), inset 0 -4px 10px rgba(0,0,0,.22), 0 0 0 3px rgba(199,154,59,.55); }
+  .cell-vendite{ grid-row: auto; grid-column: 1 / -1; }
   .cell-regole{ grid-row: 2; grid-column: 1 / -1; }
   #categories-attrezzi{ max-width: 1240px; margin: 0 auto; }
 
   .ricerca-wrap{ max-width: 560px; margin: 0 auto 16px; }
   .ricerca-bar{ display: flex; align-items: center; gap: 10px; padding: 11px 15px; background: var(--paper); border-radius: 8px; border-top: 2px solid rgba(255,255,255,.5); border-left: 2px solid rgba(255,255,255,.3); border-right: 2px solid rgba(0,0,0,.2); border-bottom: 3px solid rgba(0,0,0,.28); box-shadow: 0 10px 22px rgba(0,0,0,.35), inset 0 2px 2px rgba(255,255,255,.45), inset 0 -4px 10px rgba(0,0,0,.18); transition: box-shadow .2s ease, transform .2s ease; }
-  .ricerca-bar:focus-within{ transform: translateY(-2px); box-shadow: 0 16px 30px rgba(0,0,0,.42), 0 0 0 2px rgba(138,106,44,.4), inset 0 2px 2px rgba(255,255,255,.5); }
+  .ricerca-bar:focus-within{ box-shadow: 0 16px 30px rgba(0,0,0,.42), 0 0 0 2px rgba(138,106,44,.4), inset 0 2px 2px rgba(255,255,255,.5); }
   .ricerca-icon{ font-size: 16px; opacity: .85; }
   .ricerca-input{ flex: 1; background: transparent; border: none; outline: none; font-family: 'Special Elite', monospace; font-size: 16px; color: var(--ink); min-width: 0; }
   .ricerca-input::placeholder{ color: var(--ink-soft); opacity: .75; font-style: italic; }
@@ -133,8 +134,8 @@
   .category.ricerca-hidden{ display: none; }
   .row mark.hl{ background: var(--gold); color: var(--paper); padding: 0 2px; border-radius: 1px; }
 
-  .category{ position: relative; background: var(--paper-deep); background: linear-gradient(155deg, color-mix(in srgb, var(--paper-deep) 86%, #fff) 0%, var(--paper-deep) 45%, color-mix(in srgb, var(--paper-deep) 82%, #000) 100%); border-radius: 8px; overflow: hidden; border-top: 2px solid rgba(255,255,255,.45); border-left: 2px solid rgba(255,255,255,.3); border-right: 2px solid rgba(0,0,0,.22); border-bottom: 3px solid rgba(0,0,0,.3); box-shadow: 0 10px 22px rgba(0,0,0,.4), 0 3px 6px rgba(0,0,0,.3), inset 0 2px 2px rgba(255,255,255,.4), inset 0 -4px 10px rgba(0,0,0,.22); transform-style: preserve-3d; transition: box-shadow .3s ease, transform .3s cubic-bezier(.2,.8,.3,1); animation: catIn .45s ease both; }
-  .category:hover{ transform: translateY(-5px) rotateX(5deg) scale(1.012); box-shadow: 0 26px 46px rgba(0,0,0,.5), 0 8px 14px rgba(0,0,0,.35), inset 0 2px 3px rgba(255,255,255,.5), inset 0 -4px 12px rgba(0,0,0,.26); }
+  .category{ position: relative; background: var(--paper-deep); background: linear-gradient(155deg, color-mix(in srgb, var(--paper-deep) 86%, #fff) 0%, var(--paper-deep) 45%, color-mix(in srgb, var(--paper-deep) 82%, #000) 100%); border-radius: 8px; overflow: hidden; border-top: 2px solid rgba(255,255,255,.45); border-left: 2px solid rgba(255,255,255,.3); border-right: 2px solid rgba(0,0,0,.22); border-bottom: 3px solid rgba(0,0,0,.3); box-shadow: 0 10px 22px rgba(0,0,0,.4), 0 3px 6px rgba(0,0,0,.3), inset 0 2px 2px rgba(255,255,255,.4), inset 0 -4px 10px rgba(0,0,0,.22); transition: box-shadow .25s ease; }
+  .category:hover{ box-shadow: 0 18px 34px rgba(0,0,0,.46), 0 6px 12px rgba(0,0,0,.32), inset 0 2px 3px rgba(255,255,255,.5), inset 0 -4px 12px rgba(0,0,0,.26); }
   .category::before, .category::after{ content: ""; position: absolute; width: 12px; height: 12px; pointer-events: none; opacity: .55; z-index: 2; }
   .category::before{ top: 7px; left: 7px; border-top: 2px solid var(--gold); border-left: 2px solid var(--gold); }
   .category::after{ top: 7px; right: 7px; border-top: 2px solid var(--gold); border-right: 2px solid var(--gold); }
@@ -190,8 +191,8 @@
   .summary-close{ display:none !important; flex:0 0 auto; width: 26px; height: 26px; line-height: 1; border: 1px solid var(--ink-red); background: transparent; color: var(--ink-red); border-radius: 6px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: background .15s, color .15s; }
   .summary-close:hover{ background: var(--ink-red); color: var(--paper); }
   .listino-fab{ display: none !important; position: fixed; right: 16px; bottom: 150px; z-index: 155; width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--gold); background: var(--paper); color: var(--ink); font-size: 24px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px rgba(0,0,0,.4), inset 0 2px 3px rgba(255,255,255,.4); transition: transform .15s ease, box-shadow .15s ease; padding: 0; }
-  .listino-fab:hover{ transform: translateY(-3px) scale(1.05); box-shadow: 0 9px 22px rgba(0,0,0,.45); }
-  .listino-fab:active{ transform: scale(.96); }
+  .listino-fab:hover{ box-shadow: 0 9px 22px rgba(0,0,0,.45); }
+  .listino-fab:active{ opacity:.8; }
   .listino-fab-count{ position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--ink-red); color: #fff; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; display: none; align-items: center; justify-content: center; line-height: 1; box-shadow: 0 2px 6px rgba(0,0,0,.4); }
   .listino-fab-count.show{ display: flex; }
   @media (max-width:640px){ .listino-fab{ width:50px; height:50px; font-size:22px; right:12px; bottom:142px; } }
@@ -220,6 +221,22 @@
   .reset-btn{ background: transparent; border: 1px solid var(--ink-red); color: var(--ink-red); padding: 9px 16px; font-family: Georgia, serif; font-variant: small-caps; font-size: 13.5px; letter-spacing: .5px; border-radius: 0; cursor: pointer; transition: background .15s, color .15s, box-shadow .15s; }
   .reset-btn:hover{ background: var(--ink-red); color: var(--paper); box-shadow: 0 3px 10px rgba(138,47,34,.4); }
   .fatt-wrap{ margin-top: 24px; }
+  /* Tendina (details/summary) per acquisti registrati e riepiloghi */
+  .acq-acc{ border:1.5px solid rgba(138,106,44,.45); border-radius:10px; background:var(--paper-deep); box-shadow:0 6px 16px rgba(0,0,0,.22); margin:0 0 12px; overflow:hidden; }
+  .acq-acc > summary{ list-style:none; cursor:pointer; padding:12px 14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; background:rgba(0,0,0,.06); font-family:'Special Elite',monospace; color:var(--ink); transition:background .18s ease; }
+  .acq-acc > summary::-webkit-details-marker{ display:none; }
+  .acq-acc > summary::marker{ content:''; }
+  .acq-acc > summary:hover{ background:rgba(0,0,0,.1); }
+  .acq-acc .acc-arrow{ display:inline-block; font-size:12px; color:var(--ink-soft); transition:transform .2s ease; transform:rotate(-90deg); }
+  .acq-acc[open] .acc-arrow{ transform:rotate(0deg); }
+  .acq-acc .acc-chi{ font-weight:700; font-size:15px; }
+  .acq-acc .acc-data{ color:var(--ink-soft); font-size:12.5px; }
+  .acq-acc .acc-count{ color:var(--ink-soft); font-size:12.5px; }
+  .acq-acc .acc-tot{ margin-left:auto; font-weight:700; font-size:15px; color:var(--ink); white-space:nowrap; }
+  .acq-acc .acc-body{ padding:12px 14px 4px; border-top:1px solid var(--rule); }
+  .acq-acc .acc-body .fatt-table{ box-shadow:none; }
+  .acq-acc .acc-actions{ display:flex; justify-content:flex-end; padding:0 14px 12px; }
+  @media (max-width:520px){ .acq-acc .acc-tot{ margin-left:0; } }
   .fatt-table{ width: 100%; border-collapse: collapse; background: var(--paper-deep); border-radius: 8px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,.3), inset 0 1px 1px rgba(255,255,255,.35); font-family: 'Special Elite', monospace; }
   .fatt-table caption{ caption-side: top; text-align: left; font-family: 'IM Fell English SC', Georgia, serif; font-size: 20px; font-weight: 700; color: var(--ink); text-transform: uppercase; letter-spacing: .5px; padding: 0 4px 12px; }
   .fatt-table th, .fatt-table td{ padding: 10px 14px; border-bottom: 1px solid var(--rule); font-size: 14.5px; color: var(--ink); text-align: left; }
@@ -356,7 +373,7 @@
   .reg-orders-list{ display:flex; flex-direction:column; gap:10px; }
   .reg-empty{ font-family:'Special Elite',monospace; font-size:15px; color:var(--ink); font-style:italic; margin:6px 0; }
   .order-card{ display:flex; justify-content:space-between; gap:12px; background:var(--paper-deep); border-radius:6px; border-top:1px solid rgba(255,255,255,.4); border-right:1px solid rgba(0,0,0,.18); border-bottom:2px solid rgba(0,0,0,.26); border-left:4px solid var(--ink-soft); box-shadow:0 6px 14px rgba(0,0,0,.28), inset 0 1px 1px rgba(255,255,255,.35); padding:12px 14px; transition:transform .2s ease, box-shadow .2s ease; }
-  .order-card:hover{ transform:translateY(-2px); box-shadow:0 12px 24px rgba(0,0,0,.36), inset 0 1px 1px rgba(255,255,255,.4); }
+  .order-card:hover{ box-shadow:0 12px 24px rgba(0,0,0,.36), inset 0 1px 1px rgba(255,255,255,.4); }
   .order-card.stato-dafare{ border-left-color:var(--ink-red); }
   .order-card.stato-preparato{ border-left-color:var(--gold); }
   .order-card.stato-consegnato{ border-left-color:#4a7a3a; opacity:.78; }
@@ -397,11 +414,15 @@
   .torneo-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px; }
   .torneo-badge{ font-family:'Special Elite',monospace; font-size:12.5px; font-weight:700; color:var(--paper); background:var(--gold); padding:4px 11px; white-space:nowrap; }
   .torneo-divider{ border-top:3px double var(--rule); margin:24px 0 20px; }
+  .acq-box{ display:flex; gap:10px; flex-wrap:wrap; align-items:stretch; margin:16px 0 0; }
+  .acq-box .acq-name-input{ flex:1 1 220px; min-width:0; padding:12px 14px; border:2px solid var(--gold); border-radius:8px; background:var(--paper); color:var(--ink); font-family:'Special Elite',monospace; font-size:15px; box-sizing:border-box; }
+  .acq-box .reg-add-btn{ flex:0 0 auto; width:auto; min-width:210px; }
+  @media (max-width:520px){ .acq-box .reg-add-btn{ width:100%; } }
   .sfida-btns{ display:flex; gap:10px; flex-wrap:wrap; align-items:stretch; margin-top:6px; }
   .sfida-btns .reg-add-btn{ flex:1 1 auto; }
   .sfida-remove-btn{ flex:0 0 auto; display:inline-flex; align-items:center; gap:6px; font-family:'Special Elite',monospace; font-size:12.5px; letter-spacing:.3px; color:var(--ink-red); background:transparent; border:1px solid var(--ink-red); border-radius:6px; padding:0 16px; cursor:pointer; white-space:nowrap; transition:background .15s, color .15s, box-shadow .15s; }
   .sfida-remove-btn:hover{ background:var(--ink-red); color:var(--paper); box-shadow:0 3px 10px rgba(138,47,34,.4); }
-  .sfida-remove-btn:active{ transform:translateY(1px); }
+  .sfida-remove-btn:active{ opacity:.85; }
   .sfida-card{ background:var(--paper-deep); border-radius:6px; border-top:1px solid rgba(255,255,255,.4); border-right:1px solid rgba(0,0,0,.18); border-bottom:2px solid rgba(0,0,0,.26); border-left:4px solid var(--gold); box-shadow:0 6px 14px rgba(0,0,0,.28), inset 0 1px 1px rgba(255,255,255,.35); padding:14px 16px; margin-bottom:16px; }
   .sfida-card-head{ font-family:'IM Fell English SC',Georgia,serif; font-size:18px; font-weight:700; color:var(--ink); text-transform:uppercase; letter-spacing:.5px; padding-bottom:10px; margin-bottom:10px; border-bottom:1px dashed var(--rule); }
   .sfida-obj{ margin-bottom:12px; }
@@ -429,7 +450,7 @@
   .part-data{ font-family:'Special Elite',monospace; font-size:13px; color:var(--ink-soft); }
   .part-del{ display:inline-flex; align-items:center; gap:5px; background:transparent; border:1px solid var(--ink-red); color:var(--ink-red); font-family:'Special Elite',monospace; font-size:11px; letter-spacing:.4px; padding:5px 11px; border-radius:6px; cursor:pointer; white-space:nowrap; transition:background .15s, color .15s, box-shadow .15s; }
   .part-del:hover{ background:var(--ink-red); color:var(--paper); box-shadow:0 3px 9px rgba(138,47,34,.35); }
-  .part-del:active{ transform:translateY(1px); }
+  .part-del:active{ opacity:.85; }
   .part-deliveries{ margin-top:10px; display:flex; flex-direction:column; gap:6px; }
   .part-deliv-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; font-family:'Special Elite',monospace; font-size:14.5px; color:var(--ink); }
   .part-deliv-qta{ color:var(--gold); font-weight:700; margin-right:4px; }
@@ -441,7 +462,7 @@
   .part-total-val{ font-size:18px; color:var(--gold); font-weight:700; }
   .torneo-reset{ text-align:center; margin-top:4px; }
   .torneo-reset-btn{ font-family:'IM Fell English SC',Georgia,serif; text-transform:uppercase; letter-spacing:.5px; font-size:16px; color:var(--paper); background:var(--ink-red); border:none; border-radius:6px; padding:12px 22px; cursor:pointer; box-shadow:0 5px 14px rgba(138,47,34,.4), inset 0 1px 0 rgba(255,255,255,.3); transition:transform .15s, box-shadow .15s, opacity .15s; }
-  .torneo-reset-btn:hover{ transform:translateY(-2px); box-shadow:0 9px 20px rgba(138,47,34,.5), inset 0 1px 0 rgba(255,255,255,.35); opacity:.95; }
+  .torneo-reset-btn:hover{ box-shadow:0 9px 20px rgba(138,47,34,.5), inset 0 1px 0 rgba(255,255,255,.35); opacity:.95; }
   .torneo-reset-warn{ font-family:'Special Elite',monospace; font-size:12.5px; color:var(--ink-red); font-style:italic; line-height:1.5; margin:10px auto 0; max-width:420px; }
   .storico-card{ background:var(--paper-deep); border-radius:6px; border-top:1px solid rgba(255,255,255,.4); border-right:1px solid rgba(0,0,0,.18); border-bottom:2px solid rgba(0,0,0,.26); border-left:4px solid var(--gold); box-shadow:0 6px 14px rgba(0,0,0,.28), inset 0 1px 1px rgba(255,255,255,.35); padding:14px 16px; }
   .storico-top{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding-bottom:8px; border-bottom:1px dashed var(--rule); }
@@ -477,9 +498,9 @@
   .chat-input-bar input{ flex:1; font-family:'Special Elite',monospace; font-size:16px; color:var(--ink); background:var(--paper-deep); border:1px solid var(--ink-soft); border-radius:8px; padding:11px 13px; outline:none; }
   .chat-input-bar input:focus{ border-color:var(--gold); box-shadow:0 0 0 2px rgba(138,106,44,.25); }
   .chat-emoji-btn{ font-size:21px; line-height:1; background:var(--paper); border:1px solid var(--ink-soft); border-radius:8px; padding:8px 11px; cursor:pointer; transition:transform .12s, background .15s; }
-  .chat-emoji-btn:hover{ background:rgba(138,106,44,.14); transform:translateY(-1px); }
+  .chat-emoji-btn:hover{ background:rgba(138,106,44,.14); }
   .chat-send-btn{ font-size:20px; line-height:1; color:var(--paper); background:var(--gold); border:none; border-radius:8px; padding:10px 16px; cursor:pointer; box-shadow:0 4px 10px rgba(138,106,44,.4); transition:transform .15s, opacity .15s; }
-  .chat-send-btn:hover{ transform:translateY(-2px); opacity:.95; }
+  .chat-send-btn:hover{ opacity:.95; }
   .chat-emoji-panel{ display:none; flex-wrap:wrap; gap:3px; max-height:180px; overflow-y:auto; padding:10px; margin-bottom:8px; background:var(--paper); border:1px solid var(--ink-soft); border-radius:10px; box-shadow:0 6px 16px rgba(0,0,0,.25); }
   .chat-emoji-panel.show{ display:flex; }
   .chat-emoji-panel button{ font-size:21px; line-height:1; background:transparent; border:none; border-radius:6px; padding:4px 5px; cursor:pointer; transition:background .12s, transform .12s; }
@@ -499,7 +520,7 @@
   .chat-staff-login.on{ background:var(--gold); color:var(--paper); border-color:var(--gold); }
   .chat-staff-tag{ font-family:'IM Fell English SC',Georgia,serif; font-weight:700; font-size:13px; letter-spacing:.3px; color:var(--gold); text-transform:uppercase; }
   .chat-staff-clear{ font-family:'Special Elite',monospace; font-size:12.5px; color:var(--paper); background:var(--ink-red); border:none; border-radius:6px; padding:6px 12px; cursor:pointer; margin-left:auto; box-shadow:0 3px 8px rgba(138,47,34,.35); transition:transform .12s, opacity .15s; }
-  .chat-staff-clear:hover{ transform:translateY(-1px); opacity:.95; }
+  .chat-staff-clear:hover{ opacity:.95; }
   .chat-msg-del{ display:none; background:transparent; border:none; color:#c0392b; font-size:14px; cursor:pointer; padding:0 2px; margin-left:6px; }
   .staff-on .chat-msg-del{ display:inline-block; }
   /* ===== Pagina Staff ===== */
@@ -512,7 +533,7 @@
   .staff-err{ font-family:'Special Elite',monospace; font-size:13px; color:var(--ink-red); margin:0 0 10px; }
   .staff-ok{ font-family:'IM Fell English SC',Georgia,serif; font-weight:700; text-transform:uppercase; letter-spacing:.5px; font-size:18px; color:var(--gold); margin:4px 0 10px; }
   .staff-btn{ display:block; width:100%; font-family:'IM Fell English SC',Georgia,serif; text-transform:uppercase; letter-spacing:.5px; font-size:17px; color:var(--paper); background:var(--gold); border:none; border-radius:8px; padding:12px; cursor:pointer; margin-top:10px; box-shadow:0 5px 14px rgba(138,106,44,.4); transition:transform .15s, opacity .15s; }
-  .staff-btn:hover{ transform:translateY(-2px); opacity:.96; }
+  .staff-btn:hover{ opacity:.96; }
   .staff-logout{ background:var(--ink-red); box-shadow:0 5px 14px rgba(138,47,34,.4); }
   /* Prezzi editabili dallo staff */
   .item-price{ cursor:default; }
@@ -522,112 +543,74 @@
   .nome-mancante{ outline:2px solid var(--ink-red) !important; box-shadow:0 0 0 3px rgba(138,47,34,.25) !important; }
   /* Pulsante flottante Staff (a destra, accessibile ovunque) */
   .staff-fab{ position:fixed; left:16px; bottom:24px; z-index:300; width:56px; height:56px; border-radius:50%; border:2px solid var(--gold); background:var(--paper); color:var(--ink); font-size:26px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,.4), inset 0 2px 3px rgba(255,255,255,.4); transition:transform .15s ease, box-shadow .15s ease; padding:0; }
-  .staff-fab:hover{ transform:translateY(-3px) scale(1.05); box-shadow:0 9px 22px rgba(0,0,0,.45); }
+  .staff-fab:hover{ box-shadow:0 9px 22px rgba(0,0,0,.45); }
   .staff-fab:active{ transform:scale(.96); }
   body.staff-mode .staff-fab{ border-color:#2f8f3e; background:rgba(47,143,62,.14); box-shadow:0 6px 18px rgba(47,143,62,.4), inset 0 2px 3px rgba(255,255,255,.4); }
   @media (max-width:640px){ .staff-fab{ width:50px; height:50px; font-size:23px; left:12px; bottom:18px; } }
 
   /* =========================================================
-     EFFETTO 3D GLOBALE — profondità, prospettiva e rilievo
+     EFFETTO 3D RIMOSSO — solo rilievo statico, nessuna prospettiva
+     e nessun sollevamento al passaggio (non blocca più i clic)
      ========================================================= */
   html{ scroll-behavior:smooth; }
-  body{ perspective: 1800px; perspective-origin: 50% 20%; }
-  .page{ transform-style: preserve-3d; }
-  .reg-layout, .torneo-forms, .reg-orders-panel, .reg-form-panel, .chat-wrap, .staff-wrap{ perspective: 1500px; }
+  body{ perspective: none; }
+  .page{ transform-style: flat; }
+  .reg-layout, .torneo-forms, .reg-orders-panel, .reg-form-panel, .chat-wrap, .staff-wrap{ perspective: none; }
 
-  /* Pannelli principali: rilievo + sollevamento 3D al passaggio */
+  /* Pannelli: rilievo statico, nessun movimento */
   .reg-form-panel, .reg-orders-panel, .summary-panel, .chat-panel{
-    transform-style: preserve-3d;
-    transition: transform .35s cubic-bezier(.2,.8,.3,1), box-shadow .35s ease;
-    will-change: transform;
+    transform: none;
+    transform-style: flat;
+    transition: box-shadow .2s ease;
+    will-change: auto;
   }
-  .reg-form-panel:hover, .reg-orders-panel:hover, .chat-panel:hover{
-    transform: translateY(-6px) translateZ(26px) rotateX(3.5deg);
-    box-shadow: 0 30px 52px rgba(0,0,0,.48), 0 10px 18px rgba(0,0,0,.34), inset 0 2px 3px rgba(255,255,255,.5), inset 0 -5px 12px rgba(0,0,0,.2);
-  }
-  .summary-panel:hover{
-    transform: translateZ(22px) rotateX(2.5deg);
-    box-shadow: 0 30px 52px rgba(0,0,0,.48), 0 10px 18px rgba(0,0,0,.34), inset 0 2px 3px rgba(255,255,255,.5), inset 0 -5px 12px rgba(0,0,0,.2);
+  .reg-form-panel:hover, .reg-orders-panel:hover, .chat-panel:hover, .summary-panel:hover{
+    transform: none;
   }
 
-  /* Schede minori: galleggiano verso l'utente */
+  /* Schede: nessun sollevamento */
   .part-card, .order-card, .storico-card{
-    transform-style: preserve-3d;
-    transition: transform .3s cubic-bezier(.2,.8,.3,1), box-shadow .3s ease;
-  }
-  .part-card:hover, .order-card:hover, .storico-card:hover{
-    transform: translateY(-4px) translateZ(18px) rotateX(3deg) scale(1.01);
-    box-shadow: 0 20px 38px rgba(0,0,0,.45), 0 7px 12px rgba(0,0,0,.3), inset 0 1px 1px rgba(255,255,255,.4);
-  }
-
-  /* Testata in rilievo con profondità */
-  .header{ transform-style: preserve-3d; }
-  .header h1, .reg-page-title, .reg-panel-title, .summary-title, .staff-title{
-    text-shadow: 0 1px 0 rgba(255,255,255,.55), 0 2px 1px rgba(0,0,0,.28), 0 4px 7px rgba(0,0,0,.3);
-  }
-
-  /* Barra di navigazione con profondità e tasti in rilievo */
-  .nav-tab{ transform-style: preserve-3d; transition: all .18s ease, transform .18s cubic-bezier(.2,.8,.3,1); }
-  .nav-tab:hover{ transform: translateY(-2px) translateZ(10px); }
-  .nav-tab.active{ transform: translateZ(6px); }
-
-  /* Bottoni d'azione a rilievo 3D con pressione reale */
-  .reg-add-btn, .staff-btn, .torneo-reset-btn, .tco-toggle{
-    transform-style: preserve-3d;
-    box-shadow: 0 6px 0 rgba(0,0,0,.35), 0 10px 18px rgba(0,0,0,.3), inset 0 2px 2px rgba(255,255,255,.25);
-    transition: transform .12s ease, box-shadow .12s ease, opacity .15s ease;
-  }
-  .reg-add-btn:hover, .staff-btn:hover, .torneo-reset-btn:hover, .tco-toggle:hover{
-    transform: translateY(-2px);
-    box-shadow: 0 8px 0 rgba(0,0,0,.35), 0 14px 24px rgba(0,0,0,.34), inset 0 2px 2px rgba(255,255,255,.3);
-  }
-  .reg-add-btn:active, .staff-btn:active, .torneo-reset-btn:active, .tco-toggle:active{
-    transform: translateY(4px);
-    box-shadow: 0 2px 0 rgba(0,0,0,.35), 0 4px 8px rgba(0,0,0,.3), inset 0 2px 4px rgba(0,0,0,.2);
-  }
-
-  /* Campi quantità oggetti: leggero incavo 3D */
-  .tco-val{ box-shadow: inset 0 2px 4px rgba(0,0,0,.22), inset 0 -1px 0 rgba(255,255,255,.5); }
-  .tco-row{ transition: background .18s ease, transform .18s ease; }
-  .tco-row.on{ transform: translateZ(6px); }
-
-  /* Accessibilità: niente movimento 3D se l'utente lo disattiva */
-  @media (prefers-reduced-motion: reduce){
-    .reg-form-panel, .reg-orders-panel, .summary-panel, .chat-panel,
-    .part-card, .order-card, .storico-card, .nav-tab{ transition: box-shadow .2s ease; }
-    .reg-form-panel:hover, .reg-orders-panel:hover, .summary-panel:hover, .chat-panel:hover,
-    .part-card:hover, .order-card:hover, .storico-card:hover, .nav-tab:hover, .nav-tab.active{ transform: none; }
-  }
-
-  /* Torneo di Caccia: NESSUN effetto 3D (richiesto esplicitamente) */
-  #page-torneo{ perspective: none; }
-  #page-torneo .reg-layout, #page-torneo .torneo-forms,
-  #page-torneo .reg-orders-panel, #page-torneo .reg-form-panel{ perspective: none; }
-  #page-torneo .reg-form-panel, #page-torneo .reg-orders-panel,
-  #page-torneo .part-card, #page-torneo .storico-card{
-    transform: none !important;
+    transform: none;
     transform-style: flat;
     transition: box-shadow .2s ease;
   }
-  #page-torneo .reg-form-panel:hover, #page-torneo .reg-orders-panel:hover,
-  #page-torneo .part-card:hover, #page-torneo .storico-card:hover{
-    transform: none !important;
+  .part-card:hover, .order-card:hover, .storico-card:hover{
+    transform: none;
+    box-shadow: 0 10px 22px rgba(0,0,0,.4), 0 3px 6px rgba(0,0,0,.3);
   }
-  #page-torneo .reg-add-btn, #page-torneo .torneo-reset-btn, #page-torneo .tco-toggle{
-    transform: none !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,.25), inset 0 2px 2px rgba(255,255,255,.2);
+
+  /* Testata: testo in rilievo, ma senza profondità */
+  .header{ transform-style: flat; }
+  .header h1, .reg-page-title, .reg-panel-title, .summary-title, .staff-title{
+    text-shadow: 0 1px 0 rgba(255,255,255,.55), 0 2px 1px rgba(0,0,0,.28);
+  }
+
+  /* Barra di navigazione: nessun movimento */
+  .nav-tab{ transform-style: flat; transition: background .18s ease, color .18s ease; }
+  .nav-tab:hover{ transform: none; }
+  .nav-tab.active{ transform: none; }
+
+  /* Bottoni: pressione semplice, senza spessore 3D */
+  .reg-add-btn, .staff-btn, .torneo-reset-btn, .tco-toggle{
+    transform-style: flat;
+    box-shadow: 0 3px 8px rgba(0,0,0,.28), inset 0 1px 1px rgba(255,255,255,.22);
     transition: opacity .15s ease, box-shadow .15s ease;
   }
-  #page-torneo .reg-add-btn:hover, #page-torneo .torneo-reset-btn:hover, #page-torneo .tco-toggle:hover{
-    transform: none !important;
+  .reg-add-btn:hover, .staff-btn:hover, .torneo-reset-btn:hover, .tco-toggle:hover{
+    transform: none;
     opacity: .92;
+    box-shadow: 0 4px 12px rgba(0,0,0,.32), inset 0 1px 1px rgba(255,255,255,.25);
   }
-  #page-torneo .reg-add-btn:active, #page-torneo .torneo-reset-btn:active, #page-torneo .tco-toggle:active{
-    transform: none !important;
+  .reg-add-btn:active, .staff-btn:active, .torneo-reset-btn:active, .tco-toggle:active{
+    transform: none;
     opacity: .82;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,.3);
   }
-  #page-torneo .reg-panel-title, #page-torneo .reg-page-title{ text-shadow: 0 1px 0 rgba(255,255,255,.55); }
-  #page-torneo .tco-row.on{ transform: none; }
+
+  /* Campi quantità: incavo semplice */
+  .tco-val{ box-shadow: inset 0 1px 3px rgba(0,0,0,.18); }
+  .tco-row{ transition: background .18s ease; }
+  .tco-row.on{ transform: none; }
 </style>
 </head>
 <body>
@@ -674,7 +657,7 @@
       <button type="button" class="summary-close" onclick="toggleListino(false)" title="Chiudi" aria-label="Chiudi">✕</button>
     </div>
     <div class="summary-list" id="summaryList"><p class="summary-empty">Nessun articolo inserito.</p></div>
-    <div class="summary-total"><span>Da dare</span><span id="summaryGive">$0.00</span></div>
+    <div class="summary-total"><span id="summaryGiveLbl">Da dare</span><span id="summaryGive">$0.00</span></div>
     <div class="summary-total summary-total-2"><span>Fattura</span><span id="summaryInvoice">$0.00</span></div>
     <div style="display:flex; flex-direction:column; gap:10px; margin-top:12px; position:relative; z-index:310;">
       <input type="text" id="acqNome" placeholder="Chi ha fatto l'acquisto?" style="width:100%; padding:10px 12px; border:2px solid var(--gold); border-radius:8px; background:var(--paper); color:var(--ink); font-family:'Special Elite',monospace; font-size:15px; box-sizing:border-box;">
@@ -703,6 +686,10 @@
       </div>
       <div class="ricerca-conta" id="ricercaContaAttr"></div>
       <div class="categories-grid" id="categories-attrezzi"></div>
+      <div class="acq-box">
+        <input type="text" id="acqNomeAttr" placeholder="Chi ha fatto l'acquisto?" class="acq-name-input">
+        <button type="button" class="reg-add-btn" style="margin:0;" onclick="registraAcquistoAttr()">🧾 Registra acquisto</button>
+      </div>
       <div id="attrezziRiepilogo" class="fatt-wrap"></div>
     </div>
   </div>
@@ -948,12 +935,24 @@ const data = [
   ]},
 
   { name: "Esche Caccia", icon: "🏹", negative: true, items: [
-    { n: "Esca Per Cervi", p: 0.50 },
-    { n: "Esca Per Arieti", p: 0.85 },
-    { n: "Esca Per Serpenti", p: 0.50 },
-    { n: "Esca Per Puma", p: 5.00 },
-    { n: "Esche orso", p: 3.50 },
-    { n: "Esche Grizzly", p: 4.00 },
+    { n: "Esca per Alligatore", p: 2.00 },
+    { n: "Esca per Ariete", p: 0.85 },
+    { n: "Esca per Castoro", p: 1.00 },
+    { n: "Esca per Cervi", p: 0.50 },
+    { n: "Esca per Cinghiale", p: 1.00 },
+    { n: "Esca per Corvi", p: 0.40 },
+    { n: "Esca per Coyote", p: 0.50 },
+    { n: "Esca per Grizzly", p: 4.00 },
+    { n: "Esca per Lupo", p: 1.00 },
+    { n: "Esca per Mostro di Gila", p: 1.00 },
+    { n: "Esca per Opossum", p: 0.50 },
+    { n: "Esca per Orsi", p: 5.00 },
+    { n: "Esca per Puma", p: 5.00 },
+    { n: "Esca per Puzzola", p: 0.50 },
+    { n: "Esca per Scoiattoli", p: 0.40 },
+    { n: "Esca per Serpente", p: 0.50 },
+    { n: "Esca per Topi", p: 0.40 },
+    { n: "Esca per Volpe Rossa", p: 0.80 },
   ]},
 
   { name: "Esche Trappole Caccia", icon: "🪤", negative: true, items: [
@@ -970,6 +969,18 @@ const data = [
     { n: "Carne Rossa", p: 0.67 },
     { n: "Carne Di Cervo", p: 0.70 },
     { n: "Pelliccia", p: 1.25 },
+  ]},
+  { name: "Bistecche Pelle E Altro", icon: "🥩", negative: false, items: [
+    { n: "Bistecca", p: 1.20 },
+    { n: "Pelle", p: 1.00 },
+    { n: "Pelliccia", p: 1.50 },
+    { n: "Pelle Di Rettile", p: 1.10 },
+    { n: "Corna", p: 1.00 },
+    { n: "Artiglio", p: 1.30 },
+    { n: "Piume Di Uccello", p: 0.65 },
+    { n: "Fegato Di Uccello", p: 0.80 },
+    { n: "Veleno", p: 0.90 },
+    { n: "Pezzi Leggendari", p: 6.50 },
   ]},
 ];
 
@@ -997,7 +1008,8 @@ const cellClass = {
   "Esche Caccia": "cell-esche-caccia",
   "Esche Trappole Caccia": "cell-esche-trappole-caccia",
   "Trappole": "cell-trappole",
-  "Vendita Carne Saloons E Pelliccia": "cell-vendite",
+  "Vendita Carne Saloons E Pelliccia": "cell-salone",
+  "Bistecche Pelle E Altro": "cell-vendite",
 };
 
 const container = document.getElementById("categories");
@@ -1009,7 +1021,7 @@ data.forEach((cat, ci) => {
   const isAttrezzi = ["Attrezzi","Esche Caccia","Esche Trappole Caccia","Trappole"].includes(cat.name);
   if (cellClass[cat.name] && !isAttrezzi) catDiv.classList.add(cellClass[cat.name]);
 
-  if (["Caccia","Attrezzi"].includes(cat.name)) catDiv.classList.remove("collapsed");
+  if (["Caccia","Attrezzi","Vendita Carne Saloons E Pelliccia"].includes(cat.name)) catDiv.classList.remove("collapsed");
 
   const head = document.createElement("div");
   head.className = "category-head";
@@ -1108,9 +1120,17 @@ function calculate(){
     if (cat.negative) invoice += Math.abs(subtotal); else give += subtotal;
     if (isAttrezziCat) attrezziInvoice += Math.abs(subtotal);
   });
-  const fmt = v => `$${v.toFixed(2)}`;
-  const elTG = document.getElementById("totalGive"); if (elTG) elTG.textContent = fmt(give);
-  const elTI = document.getElementById("totalInvoice"); if (elTI) elTI.textContent = fmt(invoice);
+  const fmt = v => `$${Math.abs(v).toFixed(2)}`;
+  // Calcolo netto: "da dare" e "fattura" si compensano -> 2000 da dare - 500 fattura = 1500 da dare
+  const netto = give - invoice;
+  const elTG = document.getElementById("totalGive");
+  const elTI = document.getElementById("totalInvoice");
+  if (elTG){
+    elTG.textContent = fmt(netto);
+    const lblG = elTG.parentElement && elTG.parentElement.querySelector('.label');
+    if (lblG) lblG.textContent = netto >= 0 ? 'Da dare' : 'Da fatturare';
+  }
+  if (elTI) elTI.textContent = netto < 0 ? fmt(netto) : '$0.00';
   const elAttrInv = document.getElementById("attrezziInvoice"); if (elAttrInv) elAttrInv.textContent = fmt(attrezziInvoice);
   const elAttrCnt = document.getElementById("attrezziCount"); if (elAttrCnt) elAttrCnt.textContent = String(attrezziCount);
   renderAttrezziFattura(active, attrezziInvoice);
@@ -1156,16 +1176,20 @@ function renderListinoFattura(active, give, invoice){
       <td class="num">${neg ? '-' : ''}$${Math.abs(a.value).toFixed(2)}</td>
     </tr>`;
   }).join('');
-  box.innerHTML = `
-    <table class="fatt-table">
-      <caption>\ud83e\uddfe Riepilogo articoli selezionati</caption>
-      <thead><tr><th>Articolo</th><th>Categoria</th><th class="num">Q.t\u00e0</th><th class="num">Prezzo</th><th class="num">Totale</th></tr></thead>
-      <tbody>${body}</tbody>
-      <tfoot>
-        <tr><td colspan="4" class="fatt-tot-label">Totale da dare</td><td class="num fatt-tot-val">$${give.toFixed(2)}</td></tr>
-        <tr><td colspan="4" class="fatt-tot-label">Totale fattura</td><td class="num fatt-tot-val">$${invoice.toFixed(2)}</td></tr>
-      </tfoot>
-    </table>`;
+  const oldOpen = box.querySelector('details.fatt-acc');
+  const wasOpen = oldOpen ? oldOpen.open : false;
+  box.innerHTML = `<details class="acq-acc fatt-acc"${wasOpen ? ' open' : ''}>
+      <summary><span class="acc-arrow">\u25bc</span><span class="acc-chi">\ud83e\uddfe Riepilogo articoli selezionati</span><span class="acc-count">\u2022 ${active.length} ${active.length === 1 ? 'voce' : 'voci'}</span><span class="acc-tot">$${give.toFixed(2)}</span></summary>
+      <div class="acc-body">
+      <table class="fatt-table">
+        <thead><tr><th>Articolo</th><th>Categoria</th><th class="num">Q.t\u00e0</th><th class="num">Prezzo</th><th class="num">Totale</th></tr></thead>
+        <tbody>${body}</tbody>
+        <tfoot>
+          <tr><td colspan="4" class="fatt-tot-label">Totale da dare</td><td class="num fatt-tot-val">$${give.toFixed(2)}</td></tr>
+          <tr><td colspan="4" class="fatt-tot-label">Totale fattura</td><td class="num fatt-tot-val">$${invoice.toFixed(2)}</td></tr>
+        </tfoot>
+      </table></div>
+    </details>`;
 }
 
 function renderAttrezziFattura(active, totale){
@@ -1186,13 +1210,17 @@ function renderAttrezziFattura(active, totale){
       <td class="num">$${Math.abs(a.value).toFixed(2)}</td>
     </tr>`;
   }).join('');
-  box.innerHTML = `
-    <table class="fatt-table">
-      <caption>🧾 Riepilogo fattura — Attrezzi</caption>
-      <thead><tr><th>Materiale</th><th>Categoria</th><th class="num">Q.t\u00e0</th><th class="num">Prezzo</th><th class="num">Totale</th></tr></thead>
-      <tbody>${body}</tbody>
-      <tfoot><tr><td colspan="4" class="fatt-tot-label">Totale fattura</td><td class="num fatt-tot-val">$${totale.toFixed(2)}</td></tr></tfoot>
-    </table>`;
+  const oldOpen = box.querySelector('details.fatt-acc');
+  const wasOpen = oldOpen ? oldOpen.open : false;
+  box.innerHTML = `<details class="acq-acc fatt-acc"${wasOpen ? ' open' : ''}>
+      <summary><span class="acc-arrow">\u25bc</span><span class="acc-chi">\ud83e\uddfe Riepilogo fattura \u2014 Attrezzi</span><span class="acc-count">\u2022 ${righe.length} ${righe.length === 1 ? 'voce' : 'voci'}</span><span class="acc-tot">$${totale.toFixed(2)}</span></summary>
+      <div class="acc-body">
+      <table class="fatt-table">
+        <thead><tr><th>Materiale</th><th>Categoria</th><th class="num">Q.t\u00e0</th><th class="num">Prezzo</th><th class="num">Totale</th></tr></thead>
+        <tbody>${body}</tbody>
+        <tfoot><tr><td colspan="4" class="fatt-tot-label">Totale fattura</td><td class="num fatt-tot-val">$${totale.toFixed(2)}</td></tr></tfoot>
+      </table></div>
+    </details>`;
 }
 
 function renderSummary(active, give, invoice){
@@ -1213,8 +1241,13 @@ function renderSummary(active, give, invoice){
       </div>
     `).join("");
   }
-  document.getElementById("summaryGive").textContent = `$${give.toFixed(2)}`;
-  document.getElementById("summaryInvoice").textContent = `$${invoice.toFixed(2)}`;
+  const nettoSum = give - invoice;
+  const sg = document.getElementById("summaryGive");
+  const si = document.getElementById("summaryInvoice");
+  const sgLbl = document.getElementById("summaryGiveLbl");
+  if (sg) sg.textContent = `$${Math.abs(nettoSum).toFixed(2)}`;
+  if (sgLbl) sgLbl.textContent = nettoSum >= 0 ? 'Da dare' : 'Da fatturare';
+  if (si) si.textContent = nettoSum < 0 ? `$${Math.abs(nettoSum).toFixed(2)}` : '$0.00';
 }
 
 function resetAll(){
@@ -1292,6 +1325,40 @@ function calcolaListinoAttuale(){
   });
   return { active: active, give: give, invoice: invoice };
 }
+function registraAcquistoAttr(){
+  const st = calcolaListinoAttuale();
+  const righe = (st.active || []).filter(a => ATTREZZI_CATS.includes(a.cat));
+  if (righe.length === 0){
+    if (typeof showToast === 'function') showToast('Nessun articolo', 'Imposta le quantit\u00e0 di almeno un attrezzo.');
+    else alert('Imposta le quantit\u00e0 di almeno un attrezzo.');
+    return;
+  }
+  const nomeEl = document.getElementById('acqNomeAttr');
+  let chi = nomeEl ? nomeEl.value.trim() : '';
+  if (!chi){ chi = (typeof prompt === 'function') ? (prompt('Chi ha fatto l\'acquisto?') || '').trim() : ''; }
+  if (!chi){
+    if (typeof showToast === 'function') showToast('Nome mancante', 'Indica chi ha fatto l\'acquisto.');
+    else alert('Indica chi ha fatto l\'acquisto.');
+    if (nomeEl) nomeEl.focus();
+    return;
+  }
+  const somma = righe.reduce((t, a) => t + Math.abs(a.value), 0);
+  acquisti.unshift({
+    id: Date.now(),
+    data: new Date().toISOString(),
+    chi: chi,
+    items: righe.map(a => ({name:a.name, cat:a.cat, qty:a.qty, value:-Math.abs(a.value)})),
+    give: 0,
+    invoice: somma
+  });
+  saveAcquisti();
+  renderAcquisti();
+  if (typeof showToast === 'function') showToast('Acquisto registrato', chi + ' \u2022 Fattura $' + somma.toFixed(2));
+  resetAttrezzi();
+  if (nomeEl) nomeEl.value = '';
+  const tabAcq = document.getElementById('tabAcquisti');
+  showPage('acquisti', tabAcq);
+}
 function registraAcquisto(){
   const st = calcolaListinoAttuale();
   if (!st.active || st.active.length === 0){
@@ -1368,17 +1435,25 @@ function renderAcquisti(){
       }).join('');
       return '<tr><td colspan="4" style="font-family:\'IM Fell English\',serif; font-weight:700; text-transform:uppercase; letter-spacing:.5px; background:rgba(0,0,0,.08); color:var(--ink);">' + esc(g.cat) + '</td></tr>' + righe;
     }).join('');
-    return '<div class="fatt-wrap" style="margin-top:0; margin-bottom:22px;">'
-      + '<div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap;">'
-      + '<span style="font-family:\'Special Elite\',monospace; color:var(--ink); font-size:15px; font-weight:700;">👤 ' + esc(chiStr) + '</span>'
-      + '<span style="font-family:\'Special Elite\',monospace; color:var(--ink-soft); font-size:13px;">🕒 ' + esc(dataStr) + '</span>'
-      + '<button type="button" class="reset-btn" style="padding:5px 12px; font-size:12px;" onclick="eliminaAcquisto(' + a.id + ')">Elimina</button>'
-      + '</div>'
-      + '<table class="fatt-table"><thead><tr><th>Articolo</th><th class="num">Q.tà</th><th class="num">Prezzo</th><th class="num">Totale</th></tr></thead>'
+    const nRighe = a.items.reduce((n,it)=>n+ (it.qty||0), 0);
+    const totGive = (a.give||0);
+    return '<details class="acq-acc" data-acq="' + a.id + '">'
+      + '<summary>'
+      + '<span class="acc-arrow">\u25bc</span>'
+      + '<span class="acc-chi">\ud83d\udc64 ' + esc(chiStr) + '</span>'
+      + '<span class="acc-data">\ud83d\udd52 ' + esc(dataStr) + '</span>'
+      + '<span class="acc-count">\u2022 ' + a.items.length + (a.items.length === 1 ? ' voce' : ' voci') + ' (\u00d7' + nRighe + ')</span>'
+      + '<span class="acc-tot">$' + totGive.toFixed(2) + '</span>'
+      + '</summary>'
+      + '<div class="acc-body">'
+      + '<table class="fatt-table"><thead><tr><th>Articolo</th><th class="num">Q.t\u00e0</th><th class="num">Prezzo</th><th class="num">Totale</th></tr></thead>'
       + '<tbody>' + sezioni + '</tbody>'
       + '<tfoot><tr><td colspan="3" class="fatt-tot-label">Totale da dare</td><td class="num fatt-tot-val">$' + (a.give||0).toFixed(2) + '</td></tr>'
       + '<tr><td colspan="3" class="fatt-tot-label">Totale fattura</td><td class="num fatt-tot-val">$' + (a.invoice||0).toFixed(2) + '</td></tr></tfoot>'
-      + '</table></div>';
+      + '</table>'
+      + '</div>'
+      + '<div class="acc-actions"><button type="button" class="reset-btn" style="padding:5px 12px; font-size:12px;" onclick="eliminaAcquisto(' + a.id + ')">Elimina</button></div>'
+      + '</details>';
   }).join('');
 }
 
