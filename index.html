@@ -553,8 +553,17 @@
   .staff-add-item{ display:none; width:calc(100% - 24px); margin:8px 12px 10px; font-family:'Special Elite',monospace; font-size:13px; color:var(--ink); background:rgba(138,106,44,.1); border:1px dashed var(--gold); border-radius:6px; padding:8px; cursor:pointer; }
   .staff-add-item:hover{ background:rgba(138,106,44,.2); }
   body.staff-mode .staff-add-item{ display:block; }
-  body.staff-mode .row{ grid-template-columns: minmax(0,1fr) 96px 108px 86px; }
-  @media (max-width:560px){ body.staff-mode .row{ grid-template-columns: 1fr 74px 92px 68px; } }
+  /* Staff: frecce per spostare categorie e voci */
+  .cat-tools{ display:none; gap:4px; margin-left:auto; align-items:center; }
+  body.staff-mode .cat-tools{ display:inline-flex; }
+  .cat-move{ width:24px; height:24px; line-height:1; padding:0; border:1px solid var(--gold); background:rgba(138,106,44,.12); color:var(--ink); border-radius:5px; font-size:11px; cursor:pointer; }
+  .cat-move:hover{ background:var(--gold); color:var(--paper); }
+  .row-move{ display:none; flex-direction:column; gap:2px; margin-right:2px; }
+  body.staff-mode .row-move{ display:inline-flex; }
+  .staff-row-up, .staff-row-down{ width:18px; height:14px; line-height:12px; padding:0; border:1px solid var(--gold); background:rgba(138,106,44,.1); color:var(--ink); border-radius:3px; font-size:8px; cursor:pointer; }
+  .staff-row-up:hover, .staff-row-down:hover{ background:var(--gold); color:var(--paper); }
+  body.staff-mode .row{ grid-template-columns: minmax(0,1fr) 122px 108px 86px; }
+  @media (max-width:560px){ body.staff-mode .row{ grid-template-columns: 1fr 96px 92px 68px; } }
   @media (max-width:480px){ .staff-add-item{ font-size:12px; padding:7px; } }
   .nome-mancante{ outline:2px solid var(--ink-red) !important; box-shadow:0 0 0 3px rgba(138,47,34,.25) !important; }
   /* Pulsante flottante Staff (a destra, accessibile ovunque) */
@@ -1058,25 +1067,56 @@ function prezzoPerQty(item, qty){
   return p;
 }
 
+/* ===== Ordine alfabetico di sezioni e voci (base, prima delle modifiche staff) ===== */
+const ORDINE_CUSTOM = {};
+try { Object.assign(ORDINE_CUSTOM, JSON.parse(localStorage.getItem('avamposto_ordine') || '{}') || {}); } catch(e){}
+function cmpNome(a, b){ return String(a).localeCompare(String(b), 'it', { sensitivity: 'base' }); }
+function categorieOrdinate(onlyAttrezzi){
+  const base = data.filter(c => ATTREZZI_LIST.includes(c.name) === !!onlyAttrezzi);
+  const ord = onlyAttrezzi ? ORDINE_CUSTOM.attrezzi : ORDINE_CUSTOM.listino;
+  if (Array.isArray(ord) && ord.length){
+    const pos = new Map(ord.map((n, i) => [n, i]));
+    base.sort((a, b) => {
+      const pa = pos.has(a.name) ? pos.get(a.name) : 1e6;
+      const pb = pos.has(b.name) ? pos.get(b.name) : 1e6;
+      return (pa - pb) || cmpNome(a.name, b.name);
+    });
+  } else {
+    base.sort((a, b) => cmpNome(a.name, b.name));
+  }
+  return base;
+}
+function applicaOrdineAlfabetico(){
+  data.forEach(cat => cat.items.sort((a, b) => cmpNome(a.n, b.n)));
+}
+
 const CAT_SEMPRE_APERTE = ["Caccia","Attrezzi","Vendita Carne Saloons E Pelliccia"];
 const ATTREZZI_LIST = ["Attrezzi","Esche Caccia","Esche Trappole Caccia","Trappole"];
 
 function renderCategorie(){
   // salva lo stato attuale: schede aperte/chiuse e quantità digitate
-  const aperti = {};
+  const aperti = new Map();
   document.querySelectorAll('#categories > .category, #categories-attrezzi > .category').forEach(c => {
-    if (c.dataset.cat) aperti[c.dataset.cat] = !c.classList.contains('collapsed');
+    const nome = c.dataset.cat || (c.querySelector('.category-head') && c.querySelector('.category-head').dataset.cat);
+    if (nome && !aperti.has(nome)) aperti.set(nome, !c.classList.contains('collapsed'));
   });
-  const qty = {};
+  // le quantità e lo stato aperto/chiuso seguono categoria e articolo,
+  // così restano al loro posto anche dopo uno spostamento
+  const qtyMap = new Map();
   document.querySelectorAll('.qty-cube[data-ci]').forEach(inp => {
-    const k = inp.dataset.ci + '-' + inp.dataset.ii;
-    (qty[k] = qty[k] || []).push(inp.value);
+    const c = data[+inp.dataset.ci], it = c && c.items[+inp.dataset.ii];
+    if (!it) return;
+    const key = c.name + '\u0001' + it.n;
+    let arr = qtyMap.get(key);
+    if (!arr) qtyMap.set(key, arr = []);
+    arr.push(inp.value);
   });
 
   container.innerHTML = '';
   containerAttrezzi.innerHTML = '';
 
-data.forEach((cat, ci) => {
+categorieOrdinate(false).concat(categorieOrdinate(true)).forEach(cat => {
+  const ci = data.indexOf(cat);
   const catDiv = document.createElement("div");
   catDiv.className = `category collapsed ${cat.negative ? "negative" : "positive"}`;
   catDiv.dataset.cat = cat.name;
@@ -1084,11 +1124,18 @@ data.forEach((cat, ci) => {
   if (cellClass[cat.name] && !isAttrezzi) catDiv.classList.add(cellClass[cat.name]);
 
   if (CAT_SEMPRE_APERTE.includes(cat.name)) catDiv.classList.remove("collapsed");
+  else if (aperti.has(cat.name) && aperti.get(cat.name)) catDiv.classList.remove("collapsed");
 
   const head = document.createElement("div");
   head.className = "category-head";
+  head.dataset.cat = cat.name;
   const negLabel = cat.negative ? ` <span class="neg-label">— da fare fattura!</span>` : "";
-  head.innerHTML = `<span class="icon">${cat.icon}</span><h2>${cat.name}${negLabel}</h2><span class="arrow">▼</span>`;
+  head.innerHTML = `<span class="icon">${cat.icon}</span><h2>${cat.name}${negLabel}</h2>`
+    + '<span class="cat-tools">'
+    + `<button type="button" class="cat-move" title="Sposta su" onclick="event.stopPropagation();spostaCategoria(${ci},-1)">▲</button>`
+    + `<button type="button" class="cat-move" title="Sposta giù" onclick="event.stopPropagation();spostaCategoria(${ci},1)">▼</button>`
+    + '</span>'
+    + '<span class="arrow">▼</span>';
   head.onclick = () => catDiv.classList.toggle("collapsed");
   catDiv.appendChild(head);
 
@@ -1102,11 +1149,16 @@ data.forEach((cat, ci) => {
     const row = document.createElement("div");
     row.className = "row";
     row.dataset.nome = item.n.toLowerCase();
+    row.dataset.item = item.n;
     row.innerHTML = `
       <span class="item-name">${item.n}</span>
       <span class="price-cell">
         <span class="item-price prezzo-staff" id="price-${ci}-${ii}" data-ci="${ci}" data-ii="${ii}" title="Staff: tocca per modificare il prezzo" onclick="editPrezzo(${ci},${ii})">${prezzoHTML(item)}</span>
         <button type="button" class="staff-price-add" title="Aggiungi una casella prezzo per quantità" onclick="aggiungiPrezzo(${ci},${ii})">＋</button>
+        <span class="row-move">
+          <button type="button" class="staff-row-up" title="Sposta su" onclick="spostaOggetto(${ci},${ii},-1)">▲</button>
+          <button type="button" class="staff-row-down" title="Sposta giù" onclick="spostaOggetto(${ci},${ii},1)">▼</button>
+        </span>
         ${item.custom ? `<button type="button" class="staff-del-item" title="Elimina questo oggetto" onclick="rimuoviOggetto(${ci},${ii})">✕</button>` : ''}
       </span>
       <span class="qty-cubes" id="cubes-${ci}-${ii}">
@@ -1142,26 +1194,33 @@ data.forEach((cat, ci) => {
   document.querySelectorAll('#categories > .category, #categories-attrezzi > .category').forEach(c => {
     const nome = c.dataset.cat;
     if (!nome) return;
-    if (Object.prototype.hasOwnProperty.call(aperti, nome)) c.classList.toggle('collapsed', !aperti[nome]);
+    if (aperti.has(nome)) c.classList.toggle('collapsed', !aperti.get(nome));
   });
-  // ripristina le quantità digitate
-  Object.keys(qty).forEach(k => {
-    const parts = k.split('-');
-    const ci = parts[0], ii = parts[1];
+  // ripristina le quantità digitate (seguono categoria e articolo)
+  qtyMap.forEach((vals, key) => {
+    const sep = key.indexOf('\u0001');
+    const catName = key.slice(0, sep), itemName = key.slice(sep + 1);
+    const ci = data.findIndex(c => c.name === catName);
+    const ii = ci >= 0 ? data[ci].items.findIndex(it => it.n === itemName) : -1;
+    if (ci < 0 || ii < 0) return;
     const box = document.getElementById('cubes-' + ci + '-' + ii);
     if (!box) return;
-    const vals = qty[k];
     const inputs = box.querySelectorAll('.qty-cube');
     inputs.forEach((inp, idx) => { inp.value = vals[idx] != null ? vals[idx] : ''; });
     for (let extra = inputs.length; extra < vals.length; extra++){
-      addCube(+ci, +ii);
+      addCube(ci, ii);
       const all = box.querySelectorAll('.qty-cube');
       all[all.length - 1].value = vals[extra];
     }
+    box.dataset.cat = catName;
+    box.dataset.item = itemName;
+    box.querySelectorAll('.qty-cube').forEach(inp => { inp.dataset.cat = catName; inp.dataset.item = itemName; });
   });
   try { calculate(); } catch(e){ /* al primo avvio il riepilogo non è ancora pronto */ }
 }
 applicaOggetti();
+applicaOrdineAlfabetico();
+applicaOrdineVoci();
 renderCategorie();
 
 
@@ -1175,6 +1234,8 @@ function addCube(ci, ii){
   input.className = "qty-cube";
   input.dataset.ci = ci;
   input.dataset.ii = ii;
+  if (container.dataset.cat) input.dataset.cat = container.dataset.cat;
+  if (container.dataset.item) input.dataset.item = container.dataset.item;
   input.oninput = calculate;
   const addBtn = container.querySelector(".cube-btn.add");
   container.insertBefore(input, addBtn);
@@ -1607,7 +1668,8 @@ function aggiungiOggetto(ci){
   if (isNaN(prezzo) || prezzo < 0){ alert('Prezzo non valido.'); return; }
   const item = { n: nome, p: prezzo, tiers: [], custom: true };
   cat.items.push(item);
-  cat.items.sort((a, b) => a.n.localeCompare(b.n, 'it', { sensitivity: 'base' }));
+  applicaOrdineAlfabetico();
+  applicaOrdineVoci();
   registraOggetto(cat.name, item);
   renderCategorie();
   const div = [...document.querySelectorAll('.category')].find(c => c.dataset.cat === cat.name);
@@ -1637,6 +1699,83 @@ function aggiungiPrezzo(ci, ii){
   calculate();
   if (typeof showToast === 'function') showToast('Casella prezzo aggiunta', item.n + ' • ' + q + '+ = $' + prezzo.toFixed(2));
 }
+/* ===== Staff: spostare categorie e voci, ordine condiviso ===== */
+let ordineRef = null;
+let _syncOrdine = false;
+function salvaOrdine(){
+  try { localStorage.setItem('avamposto_ordine', JSON.stringify(ORDINE_CUSTOM)); } catch(e){}
+  if (ordineRef && !_syncOrdine){
+    try { ordineRef.set(ORDINE_CUSTOM); } catch(e){}
+  }
+}
+function listaOrdineCorrente(onlyAttrezzi){
+  return categorieOrdinate(onlyAttrezzi).map(c => c.name);
+}
+function salvaOrdineCategorie(onlyAttrezzi, lista){
+  if (onlyAttrezzi) ORDINE_CUSTOM.attrezzi = lista;
+  else ORDINE_CUSTOM.listino = lista;
+  salvaOrdine();
+}
+function spostaCategoria(ci, dir){
+  if (!isChatStaff){ alert('Solo lo staff può spostare le categorie.'); return; }
+  const cat = data[ci]; if (!cat) return;
+  const onlyAttrezzi = ATTREZZI_LIST.includes(cat.name);
+  const lista = listaOrdineCorrente(onlyAttrezzi);
+  const i = lista.indexOf(cat.name);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= lista.length) return;
+  lista.splice(j, 0, lista.splice(i, 1)[0]);
+  salvaOrdineCategorie(onlyAttrezzi, lista);
+  renderCategorie();
+}
+function salvaOrdineVoci(cat){
+  const key = 'voci||' + cat.name;
+  ORDINE_CUSTOM[key] = cat.items.map(it => it.n);
+  salvaOrdine();
+}
+function applicaOrdineVoci(){
+  Object.keys(ORDINE_CUSTOM).forEach(k => {
+    if (k.indexOf('voci||') !== 0) return;
+    const catName = k.slice(6);
+    const cat = data.find(c => c.name === catName);
+    const ord = ORDINE_CUSTOM[k];
+    if (!cat || !Array.isArray(ord) || !ord.length) return;
+    const pos = new Map(ord.map((n, i) => [n, i]));
+    cat.items.sort((a, b) => {
+      const pa = pos.has(a.n) ? pos.get(a.n) : 1e6;
+      const pb = pos.has(b.n) ? pos.get(b.n) : 1e6;
+      return (pa - pb) || cmpNome(a.n, b.n);
+    });
+  });
+}
+function spostaOggetto(ci, ii, dir){
+  if (!isChatStaff){ alert('Solo lo staff può spostare le voci.'); return; }
+  const cat = data[ci]; if (!cat) return;
+  const j = ii + dir;
+  if (ii < 0 || j < 0 || j >= cat.items.length) return;
+  const tmp = cat.items[ii];
+  cat.items[ii] = cat.items[j];
+  cat.items[j] = tmp;
+  salvaOrdineVoci(cat);
+  renderCategorie();
+}
+function initOrdineFirebase(){
+  if (!firebaseConfigurato() || typeof firebase === 'undefined') return;
+  try {
+    ordineRef = firebase.database().ref('avamposto_ordine');
+    ordineRef.on('value', snap => {
+      const val = snap.val();
+      if (!val) return;
+      _syncOrdine = true;
+      Object.keys(val).forEach(k => { ORDINE_CUSTOM[k] = val[k]; });
+      try { localStorage.setItem('avamposto_ordine', JSON.stringify(ORDINE_CUSTOM)); } catch(e){}
+      applicaOrdineVoci();
+      renderCategorie();
+      _syncOrdine = false;
+    });
+  } catch(e){ console.warn('ordine firebase ko', e); }
+}
+
 function rimuoviOggetto(ci, ii){
   if (!isChatStaff) return;
   const cat = data[ci]; const item = cat && cat.items[ii];
@@ -1664,6 +1803,8 @@ function initOggettiFirebase(){
       });
       salvaOggettiLocal();
       applicaOggetti();
+      applicaOrdineAlfabetico();
+      applicaOrdineVoci();
       renderCategorie();
       _syncOggetti = false;
     });
@@ -2752,6 +2893,7 @@ renderOrders();
 initFirebase();
 initPrezziFirebase();
 initOggettiFirebase();
+initOrdineFirebase();
 initAcquistiFirebase();
 
 /* ===== Torneo di caccia ===== */
