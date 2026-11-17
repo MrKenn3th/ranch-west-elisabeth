@@ -155,6 +155,23 @@
   .category-head h2{ font-family: 'IM Fell English SC','Rye',Georgia, serif; font-variant: normal; font-size: 17px; font-weight: 700; letter-spacing: .6px; margin: 0; color: var(--ink); text-transform: uppercase; text-shadow: 0 1px 0 rgba(255,255,255,.55); }
   .neg-label{ text-decoration: underline; text-decoration-color: var(--ink-red); color: var(--ink-red); font-size: 10px; letter-spacing: 0; }
 
+  /* intestazione colonne dentro le categorie (cliccabile = ordina) */
+  .rows-head{ display: grid; grid-template-columns: minmax(0,1fr) 74px 108px 86px; align-items: center; gap: 8px; padding: 4px 12px 5px 16px; border-bottom: 1px solid var(--rule); background: rgba(0,0,0,.07); cursor: pointer; user-select: none; }
+  .rows-head span{ font-family: 'Special Elite', monospace; font-size: 10.5px; letter-spacing: .6px; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: relative; }
+  .rows-head span:not(.h-cat){ text-align: right; }
+  .rows-head span.h-qta{ text-align: center; }
+  .rows-head span.h-cat{ text-align: center; }
+  .rows-head .sort-ar{ display: inline-block; width: 12px; font-size: 9px; margin-left: 4px; opacity: 0; text-align: left; }
+  .rows-head span.attiva{ color: var(--ink); }
+  .rows-head .attiva .sort-ar{ opacity: 1; color: var(--gold); }
+  .rows-head:hover{ background: rgba(138,106,44,.16); }
+  .rows-head:hover span{ color: var(--ink); }
+  body.staff-mode .rows-head{ grid-template-columns: minmax(0,1fr) 122px 108px 86px; }
+  .row.row-spostata{ animation: flashRiga 0.9s ease; background: rgba(199,154,59,.28) !important; }
+  @keyframes flashRiga{ 0%{ background: rgba(199,154,59,.55); } 100%{ background: rgba(199,154,59,.28); } }
+  @media (max-width: 640px){ .rows-head{ grid-template-columns: 1fr 52px 92px 68px; gap: 6px; padding: 4px 10px; padding-left: 22px; } .rows-head span{ font-size: 9px; } }
+  @media (max-width: 640px){ body.staff-mode .rows-head{ grid-template-columns: 1fr 96px 92px 68px; } }
+
   .rows{ padding: 2px 0; }
   .row{ position: relative; display: grid; grid-template-columns: minmax(0,1fr) 74px 108px 86px; align-items: center; gap: 8px; padding: 6px 12px; border-bottom: 1px dashed var(--rule); transition: background .18s ease, padding-left .18s ease; }
   .row::before{ content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--gold); transition: width .18s ease; }
@@ -1091,6 +1108,7 @@ function categorieOrdinate(onlyAttrezzi){
   }
   return base;
 }
+var ORDINI_VOCI = {};
 function applicaOrdineAlfabetico(){
   data.forEach(cat => cat.items.sort((a, b) => cmpNome(a.n, b.n)));
 }
@@ -1176,6 +1194,7 @@ categorieOrdinate(false).concat(categorieOrdinate(true)).forEach(cat => {
     rows.appendChild(row);
   });
 
+  if (cat.items.length) body.appendChild(creaIntestazioneCategoria(ci));
   body.appendChild(rows);
 
   const subtotal = document.createElement("div");
@@ -1407,6 +1426,101 @@ function abilitaOrdTabelle(root, chiave){
   if (!root) return;
   const t = root.querySelector('table.fatt-table');
   if (t) abilitaOrdTabella(t, chiave);
+}
+
+
+/* ===== Ordinamento articoli DENTRO le categorie (clic sull'intestazione) ===== */
+function _valoreVoce(ci, ii, col){
+  const cat = data[ci]; const item = cat && cat.items[ii];
+  if (!item) return { num: false, v: '' };
+  if (col === 0) return { num: false, v: String(item.n).toLowerCase() };
+  if (col === 1){
+    const n = parseFloat(item.p);
+    return { num: !isNaN(n), v: isNaN(n) ? 0 : n };
+  }
+  const t = document.getElementById('total-' + ci + '-' + ii);
+  const raw = t ? (t.textContent || '') : '';
+  const n = parseFloat(String(raw).replace(/[^\d.,-]/g, '').replace(/,/g, '.'));
+  return { num: !isNaN(n), v: isNaN(n) ? 0 : n };
+}
+function _cmpVoce(a, b){
+  if (a.num && b.num) return a.v - b.v;
+  if (a.num !== b.num) return a.num ? -1 : 1;
+  return a.v.localeCompare(b.v, 'it');
+}
+function ordinaCategoria(ci, col){
+  const cat = data[ci]; if (!cat || !cat.items.length) return;
+  const st = ORDINI_VOCI[cat.name];
+  const dir = (st && st.col === col) ? -st.dir : 1;
+  ORDINI_VOCI[cat.name] = { col: col, dir: dir };
+  const primo = cat.items[0] ? cat.items[0].n : null;
+  const indici = cat.items.map((it, i) => i);
+  if (col === 2){
+    // quantità: somma dei numeri digitati nella riga
+    const valori = cat.items.map((it, i) => {
+      let q = 0;
+      document.querySelectorAll('.qty-cube[data-ci="' + ci + '"][data-ii="' + i + '"]').forEach(inp => {
+        q += parseFloat(inp.value) || 0;
+      });
+      return { num: true, v: q };
+    });
+    indici.sort((x, y) => _cmpVoce(valori[x], valori[y]) * dir);
+  } else if (col === 3){
+    // totale: usa i totali già calcolati mostrati a destra di ogni riga
+    const valori = cat.items.map((it, i) => _valoreVoce(ci, i, 3));
+    indici.sort((x, y) => _cmpVoce(valori[x], valori[y]) * dir);
+  } else {
+    const valori = cat.items.map((it, i) => _valoreVoce(ci, i, col));
+    indici.sort((x, y) => _cmpVoce(valori[x], valori[y]) * dir);
+  }
+  const nuovi = indici.map(i => cat.items[i]);
+  cat.items.length = 0;
+  nuovi.forEach(it => cat.items.push(it));
+  if (isChatStaff) salvaOrdineVoci(cat);
+  renderCategorie();
+  // evidenzia la riga che era in cima, così si vede che è cambiato l'ordine
+  if (primo){
+    const catDiv = document.querySelector('.category[data-cat="' + cat.name.replace(/"/g, '\\"') + '"]');
+    if (catDiv){
+      const riga = Array.prototype.find.call(catDiv.querySelectorAll('.row'), r => r.dataset.item === primo);
+      if (riga) riga.classList.add('row-spostata');
+    }
+  }
+  const nuovoIndice = data.indexOf(cat);
+  const st2 = ORDINI_VOCI[cat.name];
+  aggiornaIntestazioneCategoria(nuovoIndice, st2.col, st2.dir);
+}
+function aggiornaIntestazioneCategoria(ci, col, dir){
+  const cat = data[ci]; if (!cat) return;
+  const catDiv = document.querySelector('.category[data-cat="' + cat.name.replace(/"/g, '\\"') + '"]');
+  if (!catDiv) return;
+  catDiv.querySelectorAll('.rows-head span').forEach((sp, i) => {
+    sp.classList.toggle('attiva', i === col);
+    const ar = sp.querySelector('.sort-ar');
+    if (ar) ar.textContent = (i === col) ? (dir === 1 ? '\u25b2' : '\u25bc') : '';
+  });
+}
+function creaIntestazioneCategoria(ci){
+  const cat = data[ci];
+  const h = document.createElement('div');
+  h.className = 'rows-head';
+  h.innerHTML = '<span class="h-nome">Articolo<span class="sort-ar"></span></span>'
+    + '<span class="h-prezzo">Prezzo<span class="sort-ar"></span></span>'
+    + '<span class="h-qta">Q.t\u00e0<span class="sort-ar"></span></span>'
+    + '<span class="h-cat">Totale<span class="sort-ar"></span></span>';
+  h.querySelectorAll('span').forEach((sp, i) => {
+    sp.onclick = (ev) => { ev.stopPropagation(); ordinaCategoria(ci, i); };
+  });
+  const st = cat && ORDINI_VOCI[cat.name];
+  if (st){
+    const sp = h.children[st.col];
+    if (sp){
+      sp.classList.add('attiva');
+      const ar = sp.querySelector('.sort-ar');
+      if (ar) ar.textContent = st.dir === 1 ? '\u25b2' : '\u25bc';
+    }
+  }
+  return h;
 }
 
 function renderListinoFattura(active, give, invoice){
