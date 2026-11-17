@@ -245,6 +245,11 @@
   .fatt-table td.muted{ color: var(--ink-soft); font-size: 12.5px; }
   .fatt-table tbody tr:nth-child(even){ background: rgba(0,0,0,.035); }
   .fatt-table tfoot td{ border-top: 2px solid var(--rule); border-bottom: none; background: rgba(199,154,59,.14); }
+  .fatt-table thead th.sortable{ cursor: pointer; user-select: none; position: relative; padding-right: 22px; transition: background .15s, color .15s; }
+  .fatt-table thead th.sortable:hover{ background: rgba(199,154,59,.28); color: var(--ink); }
+  .fatt-table thead th.sortable .sort-ar{ position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; opacity: .35; }
+  .fatt-table thead th.sortable.sort-asc .sort-ar{ opacity: 1; color: var(--gold); }
+  .fatt-table thead th.sortable.sort-desc .sort-ar{ opacity: 1; color: var(--gold); }
   .fatt-tot-label{ text-transform: uppercase; letter-spacing: .5px; font-weight: 700; color: var(--ink-soft); }
   .fatt-tot-val{ font-family: 'Courier New', monospace; font-weight: 700; font-size: 19px; color: var(--ink); }
   .fatt-empty{ font-family: 'Special Elite', monospace; font-size: 13px; color: var(--ink-soft); font-style: italic; padding: 14px; background: var(--paper-deep); border-radius: 8px; box-shadow: inset 0 1px 1px rgba(255,255,255,.35); }
@@ -1313,6 +1318,97 @@ function aggiornaListinoDrawer(count){
   _prevListinoCount = count;
 }
 
+
+/* ===== Ordinamento tabelle: clic sull'intestazione di colonna ===== */
+const ORD_TAB = {};
+const _NUMRE = /^[-\u2212]?\$?\s*\d{1,3}(?:[.,]\d{3})*(?:[.,]\d+)?$/;
+function _valoreOrd(txt){
+  let t = String(txt || '').replace(/[\u00d7x]\s*/i, '').replace(/\u20ac/g, '').trim();
+  if (!t) return { num: false, v: '' };
+  if (_NUMRE.test(t)){
+    const n = parseFloat(t.replace(/[^\d.,-]/g, '').replace(/,/g, '.'));
+    if (!isNaN(n)) return { num: true, v: n };
+  }
+  return { num: false, v: t.toLowerCase() };
+}
+function _confronta(a, b){
+  if (a.num && b.num) return a.v - b.v;
+  if (a.num !== b.num) return a.num ? -1 : 1;
+  return a.v.localeCompare(b.v, 'it');
+}
+function _aggiornaFrecce(table, col, dir){
+  table.querySelectorAll('thead th').forEach((th, i) => {
+    th.classList.remove('sort-asc', 'sort-desc');
+    const ar = th.querySelector('.sort-ar');
+    if (ar) ar.textContent = '';
+    if (i === col){
+      th.classList.add(dir === 1 ? 'sort-asc' : 'sort-desc');
+      if (ar) ar.textContent = dir === 1 ? '\u25b2' : '\u25bc';
+    }
+  });
+}
+function _ordinaRighe(table, col, dir){
+  const tb = table.tBodies[0];
+  if (!tb) return;
+  const blocchi = [];
+  let cur = null, raggruppato = false;
+  Array.from(tb.children).forEach(tr => {
+    const testa = tr.querySelector('td[colspan], th[colspan]');
+    if (testa){
+      cur = { testa: tr, righe: [] };
+      raggruppato = true;
+      blocchi.push(cur);
+    } else if (raggruppato && cur){
+      cur.righe.push(tr);
+    } else {
+      blocchi.push({ testa: null, righe: [tr] });
+    }
+  });
+  const chiave = b => {
+    const r = b.righe.find(tr => tr.children[col]);
+    return r ? _valoreOrd(r.children[col].textContent) : { num: false, v: '' };
+  };
+  blocchi.forEach(b => { b.k = chiave(b); });
+  blocchi.sort((x, y) => _confronta(x.k, y.k) * dir);
+  blocchi.forEach(b => {
+    if (b.testa) tb.appendChild(b.testa);
+    b.righe.forEach(r => tb.appendChild(r));
+  });
+}
+function ordinaTabella(table, col){
+  const chiave = table.dataset.tkey || (table.dataset.tkey = 'tab' + Math.random().toString(36).slice(2));
+  const st = ORD_TAB[chiave];
+  const dir = (st && st.col === col) ? -st.dir : 1;
+  ORD_TAB[chiave] = { col: col, dir: dir };
+  _ordinaRighe(table, col, dir);
+  _aggiornaFrecce(table, col, dir);
+}
+function abilitaOrdTabella(table, chiave){
+  if (!table) return;
+  table.dataset.tkey = chiave;
+  table.querySelectorAll('thead th').forEach((th, idx) => {
+    th.classList.add('sortable');
+    th.title = 'Clicca per ordinare questa colonna';
+    if (!th.querySelector('.sort-ar')){
+      const ar = document.createElement('span');
+      ar.className = 'sort-ar';
+      ar.textContent = '';
+      th.appendChild(ar);
+    }
+    th.onclick = () => ordinaTabella(table, idx);
+  });
+  const st = ORD_TAB[chiave];
+  if (st){
+    _ordinaRighe(table, st.col, st.dir);
+    _aggiornaFrecce(table, st.col, st.dir);
+  }
+}
+function abilitaOrdTabelle(root, chiave){
+  if (!root) return;
+  const t = root.querySelector('table.fatt-table');
+  if (t) abilitaOrdTabella(t, chiave);
+}
+
 function renderListinoFattura(active, give, invoice){
   const box = document.getElementById('listinoRiepilogo');
   if (!box) return;
@@ -1345,6 +1441,7 @@ function renderListinoFattura(active, give, invoice){
         </tfoot>
       </table></div>
     </details>`;
+  abilitaOrdTabelle(box, 'listino');
 }
 
 function renderAttrezziFattura(active, totale){
@@ -1376,6 +1473,7 @@ function renderAttrezziFattura(active, totale){
         <tfoot><tr><td colspan="4" class="fatt-tot-label">Totale fattura</td><td class="num fatt-tot-val">$${totale.toFixed(2)}</td></tr></tfoot>
       </table></div>
     </details>`;
+  abilitaOrdTabelle(box, 'attrezzi');
 }
 
 function renderSummary(active, give, invoice){
@@ -1608,6 +1706,10 @@ function renderAcquisti(){
       + '<div class="acc-actions"><button type="button" class="reset-btn" style="padding:5px 12px; font-size:12px;" onclick="eliminaAcquisto(' + a.id + ')">Elimina</button></div>'
       + '</details>';
   }).join('');
+  list.querySelectorAll('details[data-acq]').forEach(det => {
+    const t = det.querySelector('table.fatt-table');
+    if (t) abilitaOrdTabella(t, 'acq-' + det.dataset.acq);
+  });
 }
 
 calculate();
