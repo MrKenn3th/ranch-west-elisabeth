@@ -540,6 +540,22 @@
   body.staff-mode .prezzo-staff{ cursor:pointer; position:relative; border-radius:4px; padding:1px 4px; background:rgba(138,106,44,.14); outline:1px dashed var(--gold); }
   body.staff-mode .prezzo-staff:hover{ background:rgba(138,106,44,.28); }
   body.staff-mode .prezzo-staff::after{ content:'\270E'; margin-left:5px; font-size:11px; color:var(--gold); }
+  /* Staff: caselle prezzo e aggiunta oggetti */
+  .price-cell{ display:flex; align-items:center; justify-content:flex-end; gap:4px; min-width:0; }
+  .price-cell .item-price{ flex:1 1 auto; display:flex; flex-direction:column; align-items:flex-end; line-height:1.15; }
+  .tier-line{ font-size:11px; color:var(--gold); white-space:nowrap; font-weight:700; }
+  body.staff-mode .tier-line{ text-decoration:underline dotted; }
+  .staff-price-add{ display:none; flex:0 0 auto; width:19px; height:19px; line-height:1; padding:0; border:1px dashed var(--gold); background:rgba(138,106,44,.1); color:var(--gold); border-radius:4px; font-size:13px; font-weight:700; cursor:pointer; }
+  .staff-price-add:hover{ background:rgba(138,106,44,.25); }
+  .staff-del-item{ display:none; flex:0 0 auto; width:19px; height:19px; line-height:1; padding:0; border:1px solid var(--ink-red); background:transparent; color:var(--ink-red); border-radius:4px; font-size:11px; cursor:pointer; }
+  .staff-del-item:hover{ background:rgba(138,47,34,.15); }
+  body.staff-mode .staff-price-add, body.staff-mode .staff-del-item{ display:inline-block; }
+  .staff-add-item{ display:none; width:calc(100% - 24px); margin:8px 12px 10px; font-family:'Special Elite',monospace; font-size:13px; color:var(--ink); background:rgba(138,106,44,.1); border:1px dashed var(--gold); border-radius:6px; padding:8px; cursor:pointer; }
+  .staff-add-item:hover{ background:rgba(138,106,44,.2); }
+  body.staff-mode .staff-add-item{ display:block; }
+  body.staff-mode .row{ grid-template-columns: minmax(0,1fr) 96px 108px 86px; }
+  @media (max-width:560px){ body.staff-mode .row{ grid-template-columns: 1fr 74px 92px 68px; } }
+  @media (max-width:480px){ .staff-add-item{ font-size:12px; padding:7px; } }
   .nome-mancante{ outline:2px solid var(--ink-red) !important; box-shadow:0 0 0 3px rgba(138,47,34,.25) !important; }
   /* Pulsante flottante Staff (a destra, accessibile ovunque) */
   .staff-fab{ position:fixed; left:16px; bottom:24px; z-index:300; width:56px; height:56px; border-radius:50%; border:2px solid var(--gold); background:var(--paper); color:var(--ink); font-size:26px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,.4), inset 0 2px 3px rgba(255,255,255,.4); transition:transform .15s ease, box-shadow .15s ease; padding:0; }
@@ -953,6 +969,8 @@ const data = [
     { n: "Esca per Serpente", p: 0.50 },
     { n: "Esca per Topi", p: 0.40 },
     { n: "Esca per Volpe Rossa", p: 0.80 },
+    { n: "Cibo per Cani", p: 0.50 },
+    { n: "Esca di Capra Alpina", p: 1.00 },
   ]},
 
   { name: "Esche Trappole Caccia", icon: "🪤", negative: true, items: [
@@ -991,6 +1009,11 @@ data.forEach(cat => cat.items.sort((a, b) => a.n.localeCompare(b.n, 'it', { sens
 const ATTREZZI_CATS = ["Attrezzi","Esche Caccia","Esche Trappole Caccia","Trappole"];
 let prezziOverride = {};
 try { prezziOverride = JSON.parse(localStorage.getItem('avamposto_prezzi') || '{}') || {}; } catch(e){ prezziOverride = {}; }
+
+let oggettiCustom = {};
+try { oggettiCustom = JSON.parse(localStorage.getItem('avamposto_oggetti') || '{}') || {}; } catch(e){ oggettiCustom = {}; }
+let oggettiRef = null;
+let _syncOggetti = false;
 function chiavePrezzo(catName, itemName){ return catName + '||' + itemName; }
 function applicaOverridePrezzi(){
   data.forEach(cat => {
@@ -1015,13 +1038,52 @@ const cellClass = {
 const container = document.getElementById("categories");
 const containerAttrezzi = document.getElementById("categories-attrezzi");
 
+/* ===== Prezzi: base + eventuali caselle prezzo per quantità ===== */
+function prezzoHTML(item){
+  let html = '$' + item.p.toFixed(2);
+  const tiers = Array.isArray(item.tiers) ? item.tiers : [];
+  tiers.forEach(t => {
+    html += '<span class="tier-line">' + t.qty + '+ $' + (+t.price).toFixed(2) + '</span>';
+  });
+  return html;
+}
+function prezzoPerQty(item, qty){
+  let p = item.p;
+  if (Array.isArray(item.tiers) && item.tiers.length){
+    const ok = item.tiers.filter(t => t && t.qty > 0 && qty >= t.qty).sort((a,b) => b.qty - a.qty)[0];
+    if (ok) p = +ok.price;
+  } else if (item.tierQty && qty >= item.tierQty){
+    p = item.tierPrice;
+  }
+  return p;
+}
+
+const CAT_SEMPRE_APERTE = ["Caccia","Attrezzi","Vendita Carne Saloons E Pelliccia"];
+const ATTREZZI_LIST = ["Attrezzi","Esche Caccia","Esche Trappole Caccia","Trappole"];
+
+function renderCategorie(){
+  // salva lo stato attuale: schede aperte/chiuse e quantità digitate
+  const aperti = {};
+  document.querySelectorAll('#categories > .category, #categories-attrezzi > .category').forEach(c => {
+    if (c.dataset.cat) aperti[c.dataset.cat] = !c.classList.contains('collapsed');
+  });
+  const qty = {};
+  document.querySelectorAll('.qty-cube[data-ci]').forEach(inp => {
+    const k = inp.dataset.ci + '-' + inp.dataset.ii;
+    (qty[k] = qty[k] || []).push(inp.value);
+  });
+
+  container.innerHTML = '';
+  containerAttrezzi.innerHTML = '';
+
 data.forEach((cat, ci) => {
   const catDiv = document.createElement("div");
   catDiv.className = `category collapsed ${cat.negative ? "negative" : "positive"}`;
-  const isAttrezzi = ["Attrezzi","Esche Caccia","Esche Trappole Caccia","Trappole"].includes(cat.name);
+  catDiv.dataset.cat = cat.name;
+  const isAttrezzi = ATTREZZI_LIST.includes(cat.name);
   if (cellClass[cat.name] && !isAttrezzi) catDiv.classList.add(cellClass[cat.name]);
 
-  if (["Caccia","Attrezzi","Vendita Carne Saloons E Pelliccia"].includes(cat.name)) catDiv.classList.remove("collapsed");
+  if (CAT_SEMPRE_APERTE.includes(cat.name)) catDiv.classList.remove("collapsed");
 
   const head = document.createElement("div");
   head.className = "category-head";
@@ -1042,7 +1104,11 @@ data.forEach((cat, ci) => {
     row.dataset.nome = item.n.toLowerCase();
     row.innerHTML = `
       <span class="item-name">${item.n}</span>
-      <span class="item-price prezzo-staff" id="price-${ci}-${ii}" data-ci="${ci}" data-ii="${ii}" title="Staff: tocca per modificare il prezzo" onclick="editPrezzo(${ci},${ii})">${item.tierQty ? `$${item.p.toFixed(2)}/$${item.tierPrice.toFixed(2)}<br>-${item.tierQty}+` : `$${item.p.toFixed(2)}`}</span>
+      <span class="price-cell">
+        <span class="item-price prezzo-staff" id="price-${ci}-${ii}" data-ci="${ci}" data-ii="${ii}" title="Staff: tocca per modificare il prezzo" onclick="editPrezzo(${ci},${ii})">${prezzoHTML(item)}</span>
+        <button type="button" class="staff-price-add" title="Aggiungi una casella prezzo per quantità" onclick="aggiungiPrezzo(${ci},${ii})">＋</button>
+        ${item.custom ? `<button type="button" class="staff-del-item" title="Elimina questo oggetto" onclick="rimuoviOggetto(${ci},${ii})">✕</button>` : ''}
+      </span>
       <span class="qty-cubes" id="cubes-${ci}-${ii}">
         <input type="number" min="0" step="1" value="" placeholder="0" class="qty-cube" data-ci="${ci}" data-ii="${ii}" oninput="calculate()">
         <button type="button" class="cube-btn add" onclick="addCube(${ci},${ii})" title="Aggiungi un altro numero">+</button>
@@ -1060,10 +1126,43 @@ data.forEach((cat, ci) => {
   subtotal.innerHTML = `Subtotale: <span id="subtotal-${ci}">$0.00</span>`;
   body.appendChild(subtotal);
 
+  const addItem = document.createElement("button");
+  addItem.type = "button";
+  addItem.className = "staff-add-item";
+  addItem.textContent = "＋ Aggiungi oggetto in questa categoria";
+  addItem.onclick = () => aggiungiOggetto(ci);
+  body.appendChild(addItem);
+
   catDiv.appendChild(body);
 
   (isAttrezzi ? containerAttrezzi : container).appendChild(catDiv);
 });
+
+  // ripristina schede aperte/chiuse
+  document.querySelectorAll('#categories > .category, #categories-attrezzi > .category').forEach(c => {
+    const nome = c.dataset.cat;
+    if (!nome) return;
+    if (Object.prototype.hasOwnProperty.call(aperti, nome)) c.classList.toggle('collapsed', !aperti[nome]);
+  });
+  // ripristina le quantità digitate
+  Object.keys(qty).forEach(k => {
+    const parts = k.split('-');
+    const ci = parts[0], ii = parts[1];
+    const box = document.getElementById('cubes-' + ci + '-' + ii);
+    if (!box) return;
+    const vals = qty[k];
+    const inputs = box.querySelectorAll('.qty-cube');
+    inputs.forEach((inp, idx) => { inp.value = vals[idx] != null ? vals[idx] : ''; });
+    for (let extra = inputs.length; extra < vals.length; extra++){
+      addCube(+ci, +ii);
+      const all = box.querySelectorAll('.qty-cube');
+      all[all.length - 1].value = vals[extra];
+    }
+  });
+  try { calculate(); } catch(e){ /* al primo avvio il riepilogo non è ancora pronto */ }
+}
+applicaOggetti();
+renderCategorie();
 
 
 function addCube(ci, ii){
@@ -1102,12 +1201,7 @@ function calculate(){
       const cubes = document.querySelectorAll(`.qty-cube[data-ci="${ci}"][data-ii="${ii}"]`);
       let qty = 0;
       cubes.forEach(c => { qty += parseFloat(c.value) || 0; });
-      let rowValue;
-      if (item.tierQty && qty >= item.tierQty){
-        rowValue = qty * item.tierPrice;
-      } else {
-        rowValue = qty * item.p;
-      }
+      let rowValue = qty * prezzoPerQty(item, qty);
       const rowTotal = sign * rowValue;
       document.getElementById(`total-${ci}-${ii}`).textContent = `${rowTotal < 0 ? "-" : ""}$${Math.abs(rowTotal).toFixed(2)}`;
       subtotal += rowTotal;
@@ -1314,9 +1408,7 @@ function calcolaListinoAttuale(){
       const cubes = document.querySelectorAll('.qty-cube[data-ci="' + ci + '"][data-ii="' + ii + '"]');
       let qty = 0;
       cubes.forEach(c => { qty += parseFloat(c.value) || 0; });
-      let rowValue;
-      if (item.tierQty && qty >= item.tierQty){ rowValue = qty * item.tierPrice; }
-      else { rowValue = qty * item.p; }
+      let rowValue = qty * prezzoPerQty(item, qty);
       const rowTotal = sign * rowValue;
       subtotal += rowTotal;
       if (qty > 0){ active.push({ name: item.n, cat: cat.name, qty: qty, value: rowTotal }); }
@@ -1462,14 +1554,128 @@ toggleListino(true);
 
 /* ===== Modifica prezzi listino (solo staff) ===== */
 let prezziRef = null;
+/* ===== Staff: aggiungere oggetti, caselle prezzo, eliminarli ===== */
+function safeKey(k){ return String(k).replace(/[.#$\[\]\/]/g, '_'); }
+function salvaOggettiLocal(){
+  try { localStorage.setItem('avamposto_oggetti', JSON.stringify(oggettiCustom)); } catch(e){}
+}
+function registraOggetto(catName, item){
+  const k = chiavePrezzo(catName, item.n);
+  oggettiCustom[k] = {
+    cat: catName,
+    name: item.n,
+    p: item.p,
+    tiers: Array.isArray(item.tiers) ? item.tiers.map(t => ({qty: +t.qty, price: +t.price})) : [],
+    custom: !!item.custom
+  };
+  salvaOggettiLocal();
+  if (oggettiRef && !_syncOggetti){
+    try { oggettiRef.child(safeKey(k)).set(oggettiCustom[k]); } catch(e){}
+  }
+}
+function applicaOggetti(){
+  Object.keys(oggettiCustom).forEach(k => {
+    const rec = oggettiCustom[k];
+    if (!rec || !rec.cat || !rec.name) return;
+    const cat = data.find(c => c.name === rec.cat);
+    if (!cat) return;
+    let item = cat.items.find(it => it.n.toLowerCase() === String(rec.name).toLowerCase());
+    const tiers = Array.isArray(rec.tiers)
+      ? rec.tiers.map(t => ({qty: +t.qty, price: +t.price})).filter(t => t.qty > 0 && !isNaN(t.price))
+      : [];
+    if (item){
+      if (rec.p != null && !isNaN(rec.p)) item.p = +rec.p;
+      item.tiers = tiers;
+    } else {
+      cat.items.push({ n: rec.name, p: (rec.p != null && !isNaN(rec.p)) ? +rec.p : 0, tiers: tiers, custom: true });
+      cat.items.sort((a, b) => a.n.localeCompare(b.n, 'it', { sensitivity: 'base' }));
+    }
+  });
+}
+function aggiungiOggetto(ci){
+  if (!isChatStaff){ alert('Solo lo staff può aggiungere oggetti.'); return; }
+  const cat = data[ci]; if (!cat) return;
+  const nome = (prompt('Nome del nuovo oggetto da aggiungere a "' + cat.name + '":') || '').trim();
+  if (!nome) return;
+  if (cat.items.some(it => it.n.toLowerCase() === nome.toLowerCase())){
+    alert('Questo oggetto esiste già in questa categoria.');
+    return;
+  }
+  const pv = prompt('Prezzo di "' + nome + '":', '0.00');
+  if (pv === null) return;
+  const prezzo = parseFloat(String(pv).replace(',', '.'));
+  if (isNaN(prezzo) || prezzo < 0){ alert('Prezzo non valido.'); return; }
+  const item = { n: nome, p: prezzo, tiers: [], custom: true };
+  cat.items.push(item);
+  cat.items.sort((a, b) => a.n.localeCompare(b.n, 'it', { sensitivity: 'base' }));
+  registraOggetto(cat.name, item);
+  renderCategorie();
+  const div = [...document.querySelectorAll('.category')].find(c => c.dataset.cat === cat.name);
+  if (div) div.classList.remove('collapsed');
+  if (typeof initArticoliSelect === 'function'){ try { initArticoliSelect(); } catch(e){} }
+  if (typeof showToast === 'function') showToast('Oggetto aggiunto', nome + ' • $' + prezzo.toFixed(2));
+}
+function aggiungiPrezzo(ci, ii){
+  if (!isChatStaff){ alert('Solo lo staff può aggiungere caselle prezzo.'); return; }
+  const cat = data[ci]; const item = cat && cat.items[ii];
+  if (!item) return;
+  const qv = prompt('Nuova casella prezzo per "' + item.n + '".\nDa quale quantità vale questo prezzo? (es. 10)', '10');
+  if (qv === null) return;
+  const q = parseInt(String(qv).replace(/[^0-9]/g, ''), 10);
+  if (!q || q <= 0){ alert('Quantità non valida.'); return; }
+  const pv = prompt('Prezzo per ' + q + '+ pezzi di "' + item.n + '":', item.p.toFixed(2));
+  if (pv === null) return;
+  const prezzo = parseFloat(String(pv).replace(',', '.'));
+  if (isNaN(prezzo) || prezzo < 0){ alert('Prezzo non valido.'); return; }
+  item.tiers = Array.isArray(item.tiers) ? item.tiers : [];
+  const esistente = item.tiers.find(t => +t.qty === q);
+  if (esistente) esistente.price = prezzo;
+  else item.tiers.push({ qty: q, price: prezzo });
+  item.tiers.sort((a, b) => a.qty - b.qty);
+  registraOggetto(cat.name, item);
+  aggiornaTestoPrezzo(ci, ii);
+  calculate();
+  if (typeof showToast === 'function') showToast('Casella prezzo aggiunta', item.n + ' • ' + q + '+ = $' + prezzo.toFixed(2));
+}
+function rimuoviOggetto(ci, ii){
+  if (!isChatStaff) return;
+  const cat = data[ci]; const item = cat && cat.items[ii];
+  if (!item) return;
+  if (!confirm('Eliminare "' + item.n + '" dalla categoria ' + cat.name + '?')) return;
+  const k = chiavePrezzo(cat.name, item.n);
+  cat.items.splice(ii, 1);
+  delete oggettiCustom[k];
+  salvaOggettiLocal();
+  if (oggettiRef){ try { oggettiRef.child(safeKey(k)).remove(); } catch(e){} }
+  renderCategorie();
+  if (typeof initArticoliSelect === 'function'){ try { initArticoliSelect(); } catch(e){} }
+}
+function initOggettiFirebase(){
+  if (!firebaseConfigurato() || typeof firebase === 'undefined') return;
+  try {
+    oggettiRef = firebase.database().ref('avamposto_oggetti');
+    oggettiRef.on('value', snap => {
+      const val = snap.val();
+      if (!val) return;
+      _syncOggetti = true;
+      Object.keys(val).forEach(k => {
+        const rec = val[k];
+        if (rec && rec.cat && rec.name) oggettiCustom[k] = rec;
+      });
+      salvaOggettiLocal();
+      applicaOggetti();
+      renderCategorie();
+      _syncOggetti = false;
+    });
+  } catch(e){ console.warn('oggetti firebase ko', e); }
+}
+
 function aggiornaTestoPrezzo(ci, ii){
   const cat = data[ci]; if (!cat) return;
   const item = cat.items[ii]; if (!item) return;
   const span = document.getElementById('price-' + ci + '-' + ii);
   if (!span) return;
-  span.innerHTML = item.tierQty
-    ? '$' + item.p.toFixed(2) + '/$' + item.tierPrice.toFixed(2) + '<br>-' + item.tierQty + '+'
-    : '$' + item.p.toFixed(2);
+  span.innerHTML = prezzoHTML(item);
 }
 function editPrezzo(ci, ii){
   if (!isChatStaff){ return; }
@@ -1485,6 +1691,7 @@ function editPrezzo(ci, ii){
   prezziOverride[k] = nuovo;
   try { localStorage.setItem('avamposto_prezzi', JSON.stringify(prezziOverride)); } catch(e){}
   if (prezziRef){ try { prezziRef.child(k.replace(/[.#$\[\]\/]/g, '_')).set({ k: k, p: nuovo }); } catch(e){} }
+  if ((Array.isArray(item.tiers) && item.tiers.length) || item.custom) registraOggetto(cat.name, item);
   aggiornaTestoPrezzo(ci, ii);
   calculate();
   if (typeof initArticoliSelect === 'function') { try { initArticoliSelect(); } catch(e){} }
@@ -2544,6 +2751,7 @@ initConsegnaCaccia();
 renderOrders();
 initFirebase();
 initPrezziFirebase();
+initOggettiFirebase();
 initAcquistiFirebase();
 
 /* ===== Torneo di caccia ===== */
